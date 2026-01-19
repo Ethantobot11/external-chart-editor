@@ -5,7 +5,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	var _song:SongData;
 	var _editor:ChartEditor;
 	var bg:FlxSprite;
-	var container:FlxSprite;
+	var box:FlxSprite;
 	var typingText:FlxText = null;
 	var typingVar:String = "";
 
@@ -36,17 +36,17 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		var bgWidth = 650;
 		var bgHeight = 550;
-		container = new FlxSprite((FlxG.width - bgWidth) / 2, (FlxG.height - bgHeight) / 2).makeGraphic(bgWidth, bgHeight, 0xFF222222);
-		add(container);
+		box = new FlxSprite((FlxG.width - bgWidth) / 2, (FlxG.height - bgHeight) / 2).makeGraphic(bgWidth, bgHeight, 0xFF222222);
+		add(box);
 
-		var title = new FlxText(container.x, container.y + 10, bgWidth, "Settings / Metadata", 24);
+		var title = new FlxText(box.x, box.y + 10, bgWidth, "Settings / Metadata", 24);
 		title.alignment = CENTER;
 		add(title);
 
-		var tabY = container.y + 40;
+		var tabY = box.y + 40;
 		// ArkButton(x, y, width, height, scale, label, callback, camera)
-		tabMeta = new ArkButton(container.x + 20, tabY, 100, 30, 1.0, "Metadata", function() { changePage("Meta"); });
-		tabEditor = new ArkButton(container.x + 130, tabY, 100, 30, 1.0, "Editor", function() { changePage("Editor"); });
+		tabMeta = new ArkButton(box.x + 20, tabY, 100, 30, 1.0, "Metadata", function() { changePage("Meta"); });
+		tabEditor = new ArkButton(box.x + 130, tabY, 100, 30, 1.0, "Editor", function() { changePage("Editor"); });
 		add(tabMeta);
 		add(tabEditor);
 
@@ -56,7 +56,7 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		changePage("Meta");
 
-		var xBtn = new ArkButton(container.x + 615, container.y + 5, 25, 25, 1.0, "X", function() {
+		var xBtn = new ArkButton(box.x + 615, box.y + 5, 25, 25, 1.0, "X", function() {
 			close();
 		});
 		add(xBtn);
@@ -66,28 +66,28 @@ class SongMetadataSubState extends FlxFixedSubState
 		currentPage = page;
 		uiGroup.clear(); 
 
-		var startY = container.y + 80;
+		var startY = box.y + 80;
 		var padding = 40;
 
 		switch(page) {
 			case "Meta":
-				addOptionString(container.x + 20, startY, "Song Name:", "song");
-				addOptionNumber(container.x + 20, startY + padding, "BPM:", "bpm", 1, 1, 999);
-				addOptionNumber(container.x + 20, startY + (padding * 2), "Scroll Speed:", "speed", 0.1, 0.1, 10);
-				addOptionString(container.x + 20, startY + (padding * 3), "Player 1:", "player1");
-				addOptionString(container.x + 20, startY + (padding * 4), "Player 2:", "player2");
-				addOptionString(container.x + 20, startY + (padding * 5), "Girlfriend:", "gfVersion");
-				addOptionBool(container.x + 20, startY + (padding * 6), "Needs Voices:", "needsVoices");
+				addOptionString(box.x + 20, startY, "Song Name:", "song");
+				addOptionNumber(box.x + 20, startY + padding, "BPM:", "bpm", 1, 1, 999);
+				addOptionNumber(box.x + 20, startY + (padding * 2), "Scroll Speed:", "speed", 0.1, 0.1, 10);
+				addOptionString(box.x + 20, startY + (padding * 3), "Player 1:", "player1");
+				addOptionString(box.x + 20, startY + (padding * 4), "Player 2:", "player2");
+				addOptionString(box.x + 20, startY + (padding * 5), "Girlfriend:", "gfVersion");
+				addOptionBool(box.x + 20, startY + (padding * 6), "Needs Voices:", "needsVoices");
 
 				if (!Reflect.hasField(_song, "beatsPerSection")) Reflect.setField(_song, "beatsPerSection", 4);
-				addOptionNumber(container.x + 20, startY + (padding * 7), "Beats/Section:", "beatsPerSection", 1, 1, 16);
+				addOptionNumber(box.x + 20, startY + (padding * 7), "Beats/Section:", "beatsPerSection", 1, 1, 16);
 			case "Editor":
-				addOptionBool(container.x + 20, startY, "Show Section Lines:", "showSectionLines", true);
-				addOptionBool(container.x + 20, startY + padding, "Ghost Note:", "ghostModeEnabled", true);
-				addOptionBool(container.x + 20, startY + (padding * 2), "Static Strums:", "showStaticStrums", true);
-				addOptionBool(container.x + 20, startY + (padding * 3), "Hit Sound:", "hitSound", true);
+				addOptionBool(box.x + 20, startY, "Show Section Lines:", "showSectionLines", true);
+				addOptionBool(box.x + 20, startY + padding, "Ghost Note:", "ghostModeEnabled", true);
+				addOptionBool(box.x + 20, startY + (padding * 2), "Static Strums:", "showStaticStrums", true);
+				addOptionBool(box.x + 20, startY + (padding * 3), "Hit Sound:", "hitSound", true);
 
-				addOptionNumberEditor(container.x + 20, startY + (padding * 4), "Despawn Offset:", "noteDespawnOffset", 100, 1000, 5000);
+				addOptionNumberEditor(box.x + 20, startY + (padding * 4), "Despawn Offset:", "noteDespawnOffset", 100, 1000, 5000);
 		}
 	}
 
