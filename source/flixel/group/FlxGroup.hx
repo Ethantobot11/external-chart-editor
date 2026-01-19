@@ -21,7 +21,7 @@ typedef FlxGroup = FlxTypedGroup<FlxBasic>;
  */
  
 //I don't remember how version check works, so try this
-#if (flixel > 5.8.0)
+#if (flixel >= "5.8.0")
 class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 {
 	public var defaultCamera:FlxCamera;
