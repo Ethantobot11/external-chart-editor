@@ -1,4 +1,4 @@
-name: Build Chart Editor For Android
+name: Build Chart Editor For Mobile
 
 on: workflow_dispatch
 
@@ -12,12 +12,12 @@ jobs:
             os: macos-15
             buildArgs: "android -ONLY_ARM64"
             artifactName: androidBuild
-            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/Chart Editor.apk"
+            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/Chart-Editor.apk"
           - name: iOS
             os: macos-15
             buildArgs: "ios -final -nosign"
             artifactName: iOSBuild
-            artifactPath: "export/release/ios/build/Release-iphoneos/Chart Editor.ipa"
+            artifactPath: "export/release/ios/build/Release-iphoneos/Chart-Editor.ipa"
     uses: ./.github/workflows/build.yml
     with:
         name: ${{ matrix.name }}
