@@ -4,7 +4,7 @@
 
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Chart Editor" file="charteditor" packageName="com.arkoselabs.charteditor" package="com.arkoselabs.charteditor" main="Main" version="0.0.1" company="ArkoseLabs" />
+	<app title="Chart Editor" file="Chart-Editor" packageName="com.arkoselabs.charteditor" package="com.arkoselabs.charteditor" main="Main" version="0.0,2" company="ArkoseLabs" />
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -110,6 +110,10 @@
 	
 	<!-- Do whatever you want I'm tired uninstall and install everytime -->
 	<certificate path="key.keystore" password="psychengine" alias="psychport" alias-password="psychengine" if="android" unless="debug" />
+
+	<!-- Category Type for Apple Systems -->
+	<config:ios category_type="public.app-category.music-games" />
+	<config:mac category_type="public.app-category.music-games" />
 
 	<!-- Lime Fix -->
 	<haxedef name="lime_use_old_deltatime" />
