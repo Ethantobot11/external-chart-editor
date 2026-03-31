@@ -2,6 +2,8 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #include <hx/CFFI.h>
 
+extern "C" void openFilePicker();
+
 extern "C" void hx_onFilePicked(const char* path);
 
 @interface FilePickerDelegate : NSObject <UIDocumentPickerDelegate>
