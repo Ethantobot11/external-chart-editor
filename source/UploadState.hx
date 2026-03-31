@@ -13,8 +13,8 @@ class UploadState extends FlxState
 	// UI
 	var statusText:FlxText;
 	var btnContinue:ModernButton;
+
 	// Logic
-	var _fileRef:FileReference;
 	var _loadingType:String;
 
 	override function create()
@@ -23,8 +23,10 @@ class UploadState extends FlxState
 
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF1A1A1A);
 		add(bg);
+
 		var grid = FlxGridOverlay.create(40, 40, FlxG.width * 2, FlxG.height * 2, true, 0x11FFFFFF, 0x00FFFFFF);
 		add(grid);
+
 		var title = new FlxText(0, 40, FlxG.width, "Chart Editor Setup", 32);
 		title.setFormat(null, 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		title.borderSize = 2;
@@ -42,15 +44,9 @@ class UploadState extends FlxState
 
 		add(new ModernButton(centerX - 150, startY + (btnGap * 4), "Load Events (Optional)", 0xFFDD44DD, function() { loadFile("events"); }));
 
-		add(new ModernButton(centerX - 150, startY + (btnGap * 5), "Custom Notes (Folder)", 0xFFAA44AA, function() {
-			var fileDialog = new FileDialog();
-			fileDialog.onSelect.add(function(path:String) { 
-				customNotePath = path;
-				statusText.text = "Custom Notes Path Set:\n" + path;
-				trace("Custom Note Path: " + path);
-			});
-			fileDialog.onCancel.add(function() { trace("Folder select cancelled"); });
-			fileDialog.browse(FileDialogType.OPEN_DIRECTORY);
+		// ❌ Folder picking removed (not supported on iOS)
+		add(new ModernButton(centerX - 150, startY + (btnGap * 5), "Custom Notes (iOS unsupported)", 0xFFAA44AA, function() {
+			statusText.text = "Folder picking not supported on iOS";
 		}));
 
 		statusText = new FlxText(0, startY + (btnGap * 6), FlxG.width, "Waiting for Inst...", 16);
@@ -65,44 +61,52 @@ class UploadState extends FlxState
 		add(btnContinue);
 	}
 
+	// ✅ NEW FILE PICKER
 	function loadFile(type:String) {
 		_loadingType = type;
-		_fileRef = new FileReference();
-		_fileRef.addEventListener(Event.SELECT, onFileSelect);
-		var filterStr = (type == "chart" || type == "events") ? "*.json" : "*.ogg;*.mp3";
-		_fileRef.browse([new FileFilter(type.toUpperCase(), filterStr)]);
+
+		FilePickerCallback.onPicked = function(path:String) {
+			handlePickedFile(path);
+		};
+
+		IOSFilePicker.open(); // opens iOS Files app
 	}
 
-	function onFileSelect(e:Event) {
-		_fileRef.removeEventListener(Event.SELECT, onFileSelect);
-		_fileRef.addEventListener(Event.COMPLETE, onFileLoaded);
-		_fileRef.load();
-		statusText.text = "Loading " + _loadingType + "...";
-	}
+	// ✅ HANDLE FILE AFTER PICK
+	function handlePickedFile(path:String) {
+		statusText.text = "Loaded: " + path;
 
-	function onFileLoaded(e:Event) {
-		_fileRef.removeEventListener(Event.COMPLETE, onFileLoaded);
-		var data = _fileRef.data;
-		
-		switch(_loadingType) {
-			case "inst":
-				instData = data;
-				statusText.text = "Instrumental Loaded!";
-				statusText.color = FlxColor.CYAN;
-				btnContinue.active = true;
-				btnContinue.alpha = 1;
-			case "voices":
-				voicesData = data;
-				statusText.text = "Player Voices Loaded.";
-			case "voices_opp":
-				voicesOppData = data;
-				statusText.text = "Opponent Voices Loaded.";
-			case "chart":
-				chartData = data.toString();
-				statusText.text = "Chart Data Loaded.";
-			case "events":
-				eventsData = data.toString();
-				statusText.text = "Events Data Loaded.";
+		if (StringTools.endsWith(path, ".json")) {
+			var content = sys.io.File.getContent(path);
+
+			if (_loadingType == "chart")
+				chartData = content;
+			else
+				eventsData = content;
+		}
+		else {
+			var bytes = sys.io.File.getBytes(path);
+
+			switch(_loadingType) {
+				case "inst":
+					instData = bytes;
+					statusText.text = "Instrumental Loaded!";
+					statusText.color = FlxColor.CYAN;
+
+				case "voices":
+					voicesData = bytes;
+					statusText.text = "Player Voices Loaded.";
+
+				case "voices_opp":
+					voicesOppData = bytes;
+					statusText.text = "Opponent Voices Loaded.";
+			}
+		}
+
+		// Enable button when inst is loaded
+		if (instData != null) {
+			btnContinue.active = true;
+			btnContinue.alpha = 1;
 		}
 	}
 }
@@ -111,7 +115,6 @@ class ModernButton extends flixel.group.FlxSpriteGroup {
 	public var bg:FlxSprite;
 	public var label:FlxText;
 	var onClick:Void->Void;
-	var hoverColor:Int;
 	var baseColor:Int;
 
 	public function new(x:Float, y:Float, text:String, color:Int, onClick:Void->Void) {
@@ -123,9 +126,11 @@ class ModernButton extends flixel.group.FlxSpriteGroup {
 		bg.color = color;
 		bg.alpha = 0.8;
 		add(bg);
+
 		var border = new FlxSprite(0, 0).makeGraphic(300, 4, 0x44000000);
 		border.y = 46;
 		add(border);
+
 		label = new FlxText(0, 0, 300, text, 16);
 		label.setFormat(null, 16, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		label.y = (50 - label.height) / 2;
@@ -134,8 +139,10 @@ class ModernButton extends flixel.group.FlxSpriteGroup {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+
 		if (FlxG.mouse.overlaps(bg)) {
 			bg.alpha = 1;
+
 			if (FlxG.mouse.justPressed && active) {
 				if (onClick != null) onClick();
 			}
