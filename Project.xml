@@ -114,13 +114,15 @@
 	<!-- Category Type for Apple Systems -->
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
-    <set name="OBJC_ARC" value="true" />
-	<target name="ios">
-    <source path="ios" />
-	<framework name="UIKit" />
-    <framework name="UniformTypeIdentifiers" />
-    </target>
+    target name="ios">
+		<source path="ios" />
+		<framework name="UIKit" />
+		<framework name="UniformTypeIdentifiers" />
+	</target>
 
+	<set name="OBJC_ARC" value="true" />
+
+	<template path="ios/Info.plist" />
 	<!-- Lime Fix -->
 	<haxedef name="lime_use_old_deltatime" />
 
