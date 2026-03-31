@@ -229,12 +229,11 @@
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
     <target name="ios">
-		<source path="ios" />
-		<file path="ios/FilePicker.mm" />
-		<framework name="UIKit" />
-		<framework name="UniformTypeIdentifiers" />
+	<source path="ios" />
+	<file path="ios/FilePicker.mm" />
+	<framework name="UIKit" />
+	<framework name="UniformTypeIdentifiers" />
 	</target>
-
 	<set name="OBJC_ARC" value="true" />
 
 	<template path="ios/Info.plist" />
