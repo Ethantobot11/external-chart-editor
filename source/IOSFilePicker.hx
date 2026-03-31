@@ -3,12 +3,11 @@ package;
 import cpp.Lib;
 
 @:keep
+@:cppFileCode('extern "C" void openFilePicker();')
 class IOSFilePicker {
-	static var _open = Lib.load("", "openFilePicker", 0);
-
 	public static function open():Void {
 		#if ios
-		_open();
+		untyped __cpp__("openFilePicker()");
 		#end
 	}
 }
