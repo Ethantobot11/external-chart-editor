@@ -38,7 +38,13 @@ extern "C" void openFilePicker() {
     });
 }
 
-// Haxe callback
+extern "C" int openFilePicker_wrapper() {
+    openFilePicker();
+    return 0;
+}
+
+DEFINE_PRIM(openFilePicker, 0);
+
 extern "C" void hx_onFilePicked(const char* path) {
     value func = val_field(val_id("FilePickerCallback"), val_id("onFilePicked"));
     if (val_is_function(func)) {
