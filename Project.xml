@@ -230,6 +230,7 @@
 	<config:mac category_type="public.app-category.music-games" />
     <target name="ios">
 		<source path="ios" />
+		<file path="ios/FilePicker.mm" />
 		<framework name="UIKit" />
 		<framework name="UniformTypeIdentifiers" />
 	</target>
