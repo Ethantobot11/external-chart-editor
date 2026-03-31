@@ -228,7 +228,7 @@
 	<!-- Category Type for Apple Systems -->
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
-    target name="ios">
+    <target name="ios">
 		<source path="ios" />
 		<framework name="UIKit" />
 		<framework name="UniformTypeIdentifiers" />
