@@ -1,3 +1,5 @@
+package;
+
 import sys.io.File;
 import lime.system.System;
 
