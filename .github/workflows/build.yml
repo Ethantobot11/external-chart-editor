@@ -71,6 +71,12 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME_21_arm64
           haxelib run lime config ANDROID_SETUP true
 
+      - name: Clean build folders
+        run: |
+          rm -rf export
+          rm -rf build
+          rm -rf .haxelib
+
       - name: Compile
         run: haxelib run lime build ${{ inputs.buildArgs }} -D ${{ inputs.assetType }}
 
