@@ -1,5 +1,12 @@
 package objects;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.group.FlxSpriteGroup;
+
 class ArkButton extends FlxSpriteGroup
 {
 	public var bg:FlxSprite;
@@ -14,16 +21,6 @@ class ArkButton extends FlxSpriteGroup
 	
 	var _camera:FlxCamera;
 
-	/**
-	 * @param x         X Pozisyonu
-	 * @param y         Y Pozisyonu
-	 * @param width     Genişlik
-	 * @param height    Yükseklik
-	 * @param scale     Metin boyutu çarpanı (varsayılan 1)
-	 * @param text      Buton metni
-	 * @param onClick   Tıklanınca çalışacak fonksiyon
-	 * @param cam       Hangi kamerada görüneceği (Genelde camHUD)
-	 */
 	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float = 1, text:String, onClick:Void->Void, cam:FlxCamera = null)
 	{
 		super(x, y);
@@ -59,10 +56,27 @@ class ArkButton extends FlxSpriteGroup
 	{
 		super.update(elapsed);
 		
-		if (FlxG.mouse.overlaps(bg, cameras[0]))
-		{
-			isHovered = true;
+		var triggered:Bool = false;
+		var hovered:Bool = false;
+
+		#if (mobile || 3ds || wiiu)
+		if (FlxG.touches != null) {
+			for (touch in FlxG.touches.list) {
+				if (touch.overlaps(bg, cameras[0] != null ? cameras[0] : camera)) {
+					hovered = true;
+					if (touch.justReleased) {
+						triggered = true;
+					}
+				}
+			}
+		}
+		#end
 			
+		#if !3ds
+		#if !wiiu
+		if (FlxG.mouse.overlaps(bg, cameras[0] != null ? cameras[0] : camera))
+		{
+			hovered = true;
 			if (FlxG.mouse.pressed)
 			{
 				bg.color = clickColor;
@@ -74,13 +88,28 @@ class ArkButton extends FlxSpriteGroup
 			
 			if (FlxG.mouse.justReleased)
 			{
-				if (onClick != null) onClick();
+				triggered = true;
 			}
+		}
+		#end
+		#end
+
+		if (hovered)
+		{
+			isHovered = true;
+			#if (mobile || 3ds || wiiu)
+			bg.color = hoverColor;
+			#end
 		}
 		else
 		{
 			isHovered = false;
 			bg.color = baseColor;
+		}
+
+		if (triggered && onClick != null)
+		{
+			onClick();
 		}
 	}
 	
