@@ -46,6 +46,7 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
+          haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet
 
       - name: Install Console Toolchains
         run: |
