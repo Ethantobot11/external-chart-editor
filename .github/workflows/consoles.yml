@@ -57,7 +57,7 @@ jobs:
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             dkp-pacman -S --noconfirm 3ds-dev citro3d citro2d
           elif [ "${{ inputs.name }}" = "Wii U" ]; then
-            dkp-pacman -S --noconfirm wut-dev wuhbtool
+            dkp-pacman -S --noconfirm wiiu-dev
           fi
 
       - name: Compile for 3DS via Haxe3DS
