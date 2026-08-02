@@ -61,8 +61,11 @@ jobs:
         if: inputs.name == 'Wii U'
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget curl build-essential make
-          curl -sL https://raw.githubusercontent.com/devkitPro/installer/master/install-devkitpro-pacman | sudo bash
+          sudo apt-get install -y wget curl build-essential make lsb-release software-properties-common gnupg
+          sudo wget -O /etc/apt/trusted.gpg.d/devkitpro.gpg https://apt.devkitpro.org/devkitpro.gpg
+          echo "deb [signed-by=/etc/apt/trusted.gpg.d/devkitpro.gpg] https://apt.devkitpro.org/ stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+          sudo apt-get update
+          sudo apt-get install -ydevkitprokeys || true
           sudo dkp-pacman -Syu --yes
           sudo dkp-pacman -S --yes ppc-dev wut-dev wuhbtool
           echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
@@ -73,8 +76,11 @@ jobs:
         if: inputs.name == 'Nintendo 3DS'
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget curl gdebi-core
-          curl -sL https://raw.githubusercontent.com/devkitPro/installer/master/install-devkitpro-pacman | sudo bash
+          sudo apt-get install -y wget curl gdebi-core lsb-release software-properties-common gnupg
+          sudo wget -O /etc/apt/trusted.gpg.d/devkitpro.gpg https://apt.devkitpro.org/devkitpro.gpg
+          echo "deb [signed-by=/etc/apt/trusted.gpg.d/devkitpro.gpg] https://apt.devkitpro.org/ stable main" | sudo tee /etc/apt/sources.list.d/devkitpro.list
+          sudo apt-get update
+          sudo apt-get install -y devkitprokeys || true
           sudo dkp-pacman -Syu --yes
           sudo dkp-pacman -S --yes 3ds-dev citro3d citro2d
 
