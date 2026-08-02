@@ -1,79 +1,66 @@
-name: Build Chart Editor For Consoles
+name: Build Chart Editor For All Platforms
 
 on: workflow_dispatch
 
 jobs:
-  build-3ds:
-    name: Nintendo 3DS
-    runs-on: ubuntu-latest
-    container:
-      image: devkitpro/toolchain:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
+  Build-Standard:
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Android
+            os: macos-15
+            buildArgs: "android -ONLY_ARM64"
+            artifactName: androidBuild
+            artifactPath: "export/release/android/bin/app/build/outputs/apk/release/*.apk"
+          - name: iOS
+            os: macos-15
+            buildArgs: "ios -final -nosign"
+            artifactName: iOSBuild
+            artifactPath: "export/release/ios/build/Release-iphoneos/Chart-Editor.ipa"
+          - name: Windows
+            os: windows-latest
+            buildArgs: "windows -final -nosign"
+            artifactName: WindowBuild
+            artifactPath: export/release/windows/bin
+          - name: MacOS
+            os: macos-15
+            buildArgs: "macos -final"
+            artifactName: MacOSBuild
+            artifactPath: export/release/macos/bin
+          - name: Linux
+            os: ubuntu-latest
+            buildArgs: "linux -final -nosign"
+            artifactName: LinuxBuild
+            artifactPath: export/release/linux/bin
+    uses: ./.github/workflows/build.yml
+    with:
+      name: ${{ matrix.name }}
+      os: ${{ matrix.os }}
+      buildArgs: ${{ matrix.buildArgs }}
+      assetType: ${{ matrix.assetType }}
+      artifactName: ${{ matrix.artifactName }}
+      artifactPath: ${{ matrix.artifactPath }}
 
-      - name: Setup Haxe
-        uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.6
-
-      - name: Install Libraries
-        run: |
-          haxelib install hmm --quiet
-          haxelib run hmm install --quiet
-
-      - name: Install 3DS Components
-        run: dkp-pacman -S --yes 3ds-dev citro3d citro2d
-
-      - name: Compile 3DS
-        run: haxelib run haxe3ds -c
-
-      - name: Upload 3DS Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: 3DSBuild
-          path: "export/release/3ds/bin/*.cia"
-          if-no-files-found: error
-
-  build-wiiu:
-    name: Wii U
-    runs-on: ubuntu-latest
-    container:
-      image: devkitpro/toolchain:latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@main
-
-      - name: Setup Haxe
-        uses: krdlab/setup-haxe@master
-        with:
-          haxe-version: 4.3.6
-
-      - name: Install Build Essentials
-        run: |
-          apt-get update && apt-get install -y build-essential git wget curl
-
-      - name: Install Libraries
-        run: |
-          haxelib install hmm --quiet
-          haxelib run hmm install --quiet
-
-      - name: Install Wii U Components
-        run: dkp-pacman -S --yes ppc-dev wut-dev wuhbtool
-
-      - name: Setup HxCompileU & Compile
-        run: |
-          git clone https://github.com/Slushi-Github/hxCompileU.git
-          cd hxCompileU
-          haxe build.hxml
-          cp export/haxeCompileU ../hxCompileU-bin
-          cd ..
-          ./hxCompileU-bin --prepare
-          ./hxCompileU-bin --compile
-
-      - name: Upload Wii U Artifact
-        uses: actions/upload-artifact@main
-        with:
-          name: WiiUBuild
-          path: "export/release/wiiu/bin/*.wuhb"
-          if-no-files-found: error
+  Build-Consoles:
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Nintendo 3DS
+            os: ubuntu-latest
+            buildArgs: "3ds"
+            artifactName: 3DSBuild
+            artifactPath: "export/release/3ds/bin/*.cia"
+          - name: Wii U
+            os: ubuntu-latest
+            buildArgs: "wiiu"
+            artifactName: WiiUBuild
+            artifactPath: "export/release/wiiu/bin/*.wuhb"
+    uses: ./.github/workflows/consoles.yml
+    with:
+      name: ${{ matrix.name }}
+      os: ${{ matrix.os }}
+      buildArgs: ${{ matrix.buildArgs }}
+      artifactName: ${{ matrix.artifactName }}
+      artifactPath: ${{ matrix.artifactPath }}
