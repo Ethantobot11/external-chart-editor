@@ -28,7 +28,7 @@ class EventOptionSubState extends FlxFixedSubState
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
 	{
 		super();
-		#if !3ds
+		#if !haxe3ds
 		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 		#end
 		this.note = note;
@@ -114,7 +114,7 @@ class EventOptionSubState extends FlxFixedSubState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		
-		#if (mobile || 3ds || wiiu)
+		#if (mobile || haxe3ds || cafe)
 		if (FlxG.touches != null) {
 			for (touch in FlxG.touches.list) {
 				if (touch.justPressed) {
@@ -126,8 +126,8 @@ class EventOptionSubState extends FlxFixedSubState
 		}
 		#end
 
-		#if !3ds
-		#if !wiiu
+		#if !haxe3ds
+		#if !cafe
 		if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
 			closeAnim(function(){});
 		}

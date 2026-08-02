@@ -135,7 +135,7 @@ class EditorNote extends FlxSprite {
 			var colIdx = data.column % 4;
 			var loadedCustom:Bool = false;
 
-			#if (!3ds && !wiiu)
+			#if (!haxe3ds && !cafe)
 			if (customNotePath != null && data.noteType != "Normal" && data.noteType != "Hurt Note") {
 				var path = haxe.io.Path.join([customNotePath, data.noteType + ".png"]);
 				if (sys.FileSystem.exists(path)) {

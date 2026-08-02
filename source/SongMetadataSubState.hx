@@ -6,8 +6,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-#if (3ds || wiiu)
-import haxe3ds.services.HID;
+#if (haxe3ds || cafe)
+import haxehaxe3ds.services.HID;
 #end
 
 class SongMetadataSubState extends FlxFixedSubState
@@ -38,7 +38,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	{
 		super.create();
 
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.add(onTextInput);
@@ -108,7 +108,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	}
 
 	override function close() {
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.remove(onTextInput);
@@ -133,7 +133,7 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		btn.onClick = function() {
 			if(typingText != null) return;
-			#if (!3ds && !wiiu)
+			#if (!haxe3ds && !cafe)
 			if (FlxG.stage != null && FlxG.stage.window != null)
 			{
 				FlxG.stage.window.textInputEnabled = true;
@@ -236,7 +236,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		#if (3ds || wiiu)
+		#if (haxe3ds || cafe)
 		if (typingText != null) {
 			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
 				Reflect.setField(_song, typingVar, typingText.text);
@@ -263,7 +263,7 @@ class SongMetadataSubState extends FlxFixedSubState
 				Reflect.setField(_song, typingVar, typingText.text);
 				typingText = null;
 				typingVar = "";
-				#if (!3ds && !wiiu)
+				#if (!haxe3ds && !cafe)
 				if (FlxG.stage != null && FlxG.stage.window != null)
 				{
 					FlxG.stage.window.textInputEnabled = false;

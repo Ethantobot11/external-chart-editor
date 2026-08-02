@@ -124,7 +124,7 @@ class ChartEditor extends FlxState
 		uiScale = 1.0;
 		#end
 
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		FlxG.mouse.visible = true;
 		#end
 
@@ -264,7 +264,7 @@ class ChartEditor extends FlxState
 		customNotesList = defaultNoteTypes;
 		var path = _psychChartData.customNotePath;
 		
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (path != null && path.length > 0) {
 			trace("Attempting to load custom notes from: " + path);
 			try {
@@ -395,7 +395,7 @@ class ChartEditor extends FlxState
 		for (line in strumLines) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 		for (line in eventStrums) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 
-		#if (mobile || 3ds || wiiu)
+		#if (mobile || haxe3ds || cafe)
 		handleTouchInput(elapsed);
 		#end
 		
@@ -459,7 +459,7 @@ class ChartEditor extends FlxState
 		}
 	}
 
-	#if (mobile || 3ds || wiiu)
+	#if (mobile || haxe3ds || cafe)
 	function handleTouchInput(elapsed:Float) {
 		if (isPlaying || isDraggingBar) return;
 		if (btnNoteType.isOpen) {
@@ -680,7 +680,7 @@ class ChartEditor extends FlxState
 		var barX = scrollBarBg.x;
 		var maxTime = (songLength > 0) ? songLength : 1;
 		
-		#if (mobile || 3ds || wiiu)
+		#if (mobile || haxe3ds || cafe)
 		if (FlxG.touches != null) {
 			for(touch in FlxG.touches.list) {
 				if(touch.justPressed && touch.overlaps(scrollBarBg, camHUD)) {
@@ -691,8 +691,8 @@ class ChartEditor extends FlxState
 		}
 		#end
 
-		#if !3ds
-		#if !wiiu
+		#if !haxe3ds
+		#if !cafe
 		if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(scrollBarBg, camHUD)) {
 			isDraggingBar = true;
 			if(isPlaying) togglePlayback();
@@ -701,11 +701,11 @@ class ChartEditor extends FlxState
 		#end
 
 		var releaseCheck:Bool = false;
-		#if (mobile || 3ds || wiiu)
+		#if (mobile || haxe3ds || cafe)
 		if (FlxG.touches != null && FlxG.touches.getFirst() != null && FlxG.touches.getFirst().justReleased) releaseCheck = true;
 		#end
-		#if !3ds
-		#if !wiiu
+		#if !haxe3ds
+		#if !cafe
 		if (FlxG.mouse.released) releaseCheck = true;
 		#end
 		#end
@@ -714,10 +714,10 @@ class ChartEditor extends FlxState
 		
 		if (isDraggingBar) {
 			var mouseX:Float = 0;
-			#if (mobile || 3ds || wiiu)
+			#if (mobile || haxe3ds || cafe)
 			var t = FlxG.touches != null ? FlxG.touches.getFirst() : null;
 			if(t != null) mouseX = t.getScreenPosition(camHUD).x;
-			#if !3ds #if !wiiu else mouseX = FlxG.mouse.getScreenPosition(camHUD).x; #end #end
+			#if !haxe3ds #if !cafe else mouseX = FlxG.mouse.getScreenPosition(camHUD).x; #end #end
 			#else
 			mouseX = FlxG.mouse.getScreenPosition(camHUD).x;
 			#end
@@ -822,7 +822,7 @@ class ChartEditor extends FlxState
 		var eventsJson = { "song": { "events": savedGlobalEvents } };
 		var eventsDataStr = Json.stringify(eventsJson, "\t");
 
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (isGlobalEvents) {
 			var fr2 = new FileReference();
 			fr2.save(eventsDataStr, "events.json");

@@ -49,12 +49,12 @@ jobs:
         include:
           - name: Nintendo 3DS
             os: ubuntu-latest
-            buildArgs: "3ds"
+            buildArgs: "3ds -D haxe3ds -D final"
             artifactName: 3DSBuild
             artifactPath: "export/release/3ds/bin/*.cia"
           - name: Wii U
             os: ubuntu-latest
-            buildArgs: "wiiu"
+            buildArgs: "wiiu -D final -D cafe"
             artifactName: WiiUBuild
             artifactPath: "export/release/wiiu/bin/*.wuhb"
     uses: ./.github/workflows/consoles.yml

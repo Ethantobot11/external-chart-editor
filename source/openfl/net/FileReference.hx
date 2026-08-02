@@ -1329,7 +1329,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		#if sys
 		if (__path == null || !FileSystem.exists(__path))
 		{
@@ -1433,7 +1433,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function openFileDialog_onSelect(path:String):Void
 	{
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		#if sys
 		var fileInfo = FileSystem.stat(path);
 		creationDate = fileInfo.ctime;
@@ -1465,7 +1465,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function saveFileDialog_onSelect(path:String):Void
 	{
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		#if (desktop && sys || android && sys)
 		name = Path.withoutDirectory(path);
 
@@ -1488,7 +1488,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function urlLoader_download_onComplete(event:Event):Void
 	{
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		#if (desktop && sys)
 		if ((__urlLoader.data is ByteArrayData))
 		{

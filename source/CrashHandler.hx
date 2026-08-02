@@ -82,7 +82,7 @@ class CrashHandler
 		saveErrorMessage('$m\n$stackLabel');
 		#end
 
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.alert('$m\n$stackLabel', "Error!");
@@ -106,7 +106,7 @@ class CrashHandler
 		saveErrorMessage(log.join('\n'));
 		#end
 
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.alert(log.join('\n'), "Critical Error!");
@@ -120,7 +120,7 @@ class CrashHandler
 	#if sys
 	private static function saveErrorMessage(message:String):Void
 	{
-		#if (3ds || wiiu)
+		#if (haxe3ds || cafe)
 		return;
 		#else
 		var cwd:String = "";

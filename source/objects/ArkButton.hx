@@ -59,7 +59,7 @@ class ArkButton extends FlxSpriteGroup
 		var triggered:Bool = false;
 		var hovered:Bool = false;
 
-		#if (mobile || 3ds || wiiu)
+		#if (mobile || haxe3ds || cafe)
 		if (FlxG.touches != null) {
 			for (touch in FlxG.touches.list) {
 				if (touch.overlaps(bg, cameras[0] != null ? cameras[0] : camera)) {
@@ -72,8 +72,8 @@ class ArkButton extends FlxSpriteGroup
 		}
 		#end
 			
-		#if !3ds
-		#if !wiiu
+		#if !haxe3ds
+		#if !cafe
 		if (FlxG.mouse.overlaps(bg, cameras[0] != null ? cameras[0] : camera))
 		{
 			hovered = true;
@@ -97,7 +97,7 @@ class ArkButton extends FlxSpriteGroup
 		if (hovered)
 		{
 			isHovered = true;
-			#if (mobile || 3ds || wiiu)
+			#if (mobile || haxe3ds || cafe)
 			bg.color = hoverColor;
 			#end
 		}

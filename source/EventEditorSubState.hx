@@ -6,8 +6,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-#if (3ds || wiiu)
-import haxe3ds.services.HID;
+#if (haxe3ds || cafe)
+import haxehaxe3ds.services.HID;
 #end
 
 class EventEditorSubState extends FlxFixedSubState {
@@ -29,7 +29,7 @@ class EventEditorSubState extends FlxFixedSubState {
 	override function create() {
 		super.create();
 		
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.add(onTextInput);
@@ -73,7 +73,7 @@ class EventEditorSubState extends FlxFixedSubState {
 	}
 
 	override function close() {
-		#if (!3ds && !wiiu)
+		#if (!haxe3ds && !cafe)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.remove(onTextInput);
@@ -95,7 +95,7 @@ class EventEditorSubState extends FlxFixedSubState {
 		btn.onClick = function() {
 			if(typingText != null) return;
 			
-			#if (!3ds && !wiiu)
+			#if (!haxe3ds && !cafe)
 			if (FlxG.stage != null && FlxG.stage.window != null)
 			{
 				FlxG.stage.window.textInputEnabled = true;
@@ -112,7 +112,7 @@ class EventEditorSubState extends FlxFixedSubState {
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		#if (3ds || wiiu)
+		#if (haxe3ds || cafe)
 		if (typingText != null) {
 			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
 				Reflect.setProperty(note, typingVar, typingText.text);
@@ -139,7 +139,7 @@ class EventEditorSubState extends FlxFixedSubState {
 				Reflect.setProperty(note, typingVar, typingText.text);
 				typingVar = '';
 				typingText = null;
-				#if (!3ds && !wiiu)
+				#if (!haxe3ds && !cafe)
 				if (FlxG.stage != null && FlxG.stage.window != null)
 				{
 					FlxG.stage.window.textInputEnabled = false;

@@ -70,7 +70,7 @@ class UploadState extends FlxState
 			#end
 			statusText.text = "Using App Documents Folder";
 			trace("Custom Note Path: " + customNotePath);
-			#elseif (3ds || wiiu)
+			#elseif (haxe3ds || cafe)
 			statusText.text = "Custom folders not supported on console.";
 			#else
 			var fileDialog = new FileDialog();
@@ -97,8 +97,8 @@ class UploadState extends FlxState
 	function loadFile(type:String) {
 		_loadingType = type;
 
-		#if (ios || 3ds || wiiu)
-		#if (3ds || wiiu)
+		#if (ios || haxe3ds || cafe)
+		#if (haxe3ds || cafe)
 		statusText.text = "File loading disabled on target console.";
 		return;
 		#else
@@ -127,7 +127,7 @@ class UploadState extends FlxState
 		#end
 	}
 
-	#if (!ios && !3ds && !wiiu)
+	#if (!ios && !haxe3ds && !cafe)
 	function onFileSelect(e:Event) {
 		_fileRef.removeEventListener(Event.SELECT, onFileSelect);
 		_fileRef.addEventListener(Event.COMPLETE, onFileLoaded);
