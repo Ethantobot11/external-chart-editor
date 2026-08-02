@@ -1,9 +1,9 @@
-name: Build Chart Editor For Mobile & Desktop
+name: Build Chart Editor For All Platforms
 
 on: workflow_dispatch
 
 jobs:
-  Build:
+  Build-Standard:
     name: ${{ matrix.name }}
     strategy:
       matrix:
@@ -35,9 +35,32 @@ jobs:
             artifactPath: export/release/linux/bin
     uses: ./.github/workflows/build.yml
     with:
-        name: ${{ matrix.name }}
-        os: ${{ matrix.os }}
-        buildArgs: ${{ matrix.buildArgs }}
-        assetType: ${{ matrix.assetType }}
-        artifactName: ${{ matrix.artifactName }}
-        artifactPath: ${{ matrix.artifactPath }}
+      name: ${{ matrix.name }}
+      os: ${{ matrix.os }}
+      buildArgs: ${{ matrix.buildArgs }}
+      assetType: ${{ matrix.assetType }}
+      artifactName: ${{ matrix.artifactName }}
+      artifactPath: ${{ matrix.artifactPath }}
+
+  Build-Consoles:
+    name: ${{ matrix.name }}
+    strategy:
+      matrix:
+        include:
+          - name: Nintendo 3DS
+            os: ubuntu-latest
+            buildArgs: "3ds"
+            artifactName: 3DSBuild
+            artifactPath: "export/release/3ds/bin/*.cia"
+          - name: Wii U
+            os: ubuntu-latest
+            buildArgs: "wiiu"
+            artifactName: WiiUBuild
+            artifactPath: "export/release/wiiu/bin/*.wuhb"
+    uses: ./.github/workflows/consoles.yml
+    with:
+      name: ${{ matrix.name }}
+      os: ${{ matrix.os }}
+      buildArgs: ${{ matrix.buildArgs }}
+      artifactName: ${{ matrix.artifactName }}
+      artifactPath: ${{ matrix.artifactPath }}
