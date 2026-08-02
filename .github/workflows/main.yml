@@ -33,6 +33,11 @@ jobs:
             buildArgs: "linux -final -nosign"
             artifactName: LinuxBuild
             artifactPath: export/release/linux/bin
+          - name: Nintendo 3DS
+            os: ubuntu-latest
+            buildArgs: "3ds -final"
+            artifactName: 3DSBuild
+            artifactPath: "export/release/3ds/bin/*.3dsx"
     uses: ./.github/workflows/build.yml
     with:
         name: ${{ matrix.name }}
