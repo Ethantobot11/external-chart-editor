@@ -1,5 +1,15 @@
 package;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+
+#if (3ds || wiiu)
+import haxe3ds.services.HID;
+#end
+
 class SongMetadataSubState extends FlxFixedSubState
 {
 	var _song:SongData;
@@ -18,7 +28,8 @@ class SongMetadataSubState extends FlxFixedSubState
 	public function new(songData:SongData, editor:ChartEditor)
 	{
 		super();
-		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		if (FlxG.cameras.list.length > 0)
+			defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 		this._song = songData;
 		this._editor = editor;
 	}
@@ -27,8 +38,13 @@ class SongMetadataSubState extends FlxFixedSubState
 	{
 		super.create();
 
-		FlxG.stage.window.onTextInput.add(onTextInput);
-		FlxG.stage.window.onKeyDown.add(onKeyDown);
+		#if (!3ds && !wiiu)
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.onTextInput.add(onTextInput);
+			FlxG.stage.window.onKeyDown.add(onKeyDown);
+		}
+		#end
 
 		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0.6;
@@ -44,7 +60,6 @@ class SongMetadataSubState extends FlxFixedSubState
 		add(title);
 
 		var tabY = box.y + 40;
-		// ArkButton(x, y, width, height, scale, label, callback, camera)
 		tabMeta = new ArkButton(box.x + 20, tabY, 100, 30, 1.0, "Metadata", function() { changePage("Meta"); });
 		tabEditor = new ArkButton(box.x + 130, tabY, 100, 30, 1.0, "Editor", function() { changePage("Editor"); });
 		add(tabMeta);
@@ -52,7 +67,8 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		uiGroup = new FlxTypedGroup<FlxSprite>();
 		add(uiGroup);
-		uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		if (FlxG.cameras.list.length > 0)
+			uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 
 		changePage("Meta");
 
@@ -92,9 +108,17 @@ class SongMetadataSubState extends FlxFixedSubState
 	}
 
 	override function close() {
-		FlxG.stage.window.onTextInput.remove(onTextInput);
-		FlxG.stage.window.onKeyDown.remove(onKeyDown);
-		_editor.changeStaticStrumVisibilty(EditorPrefs.showStaticStrums);
+		#if (!3ds && !wiiu)
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.onTextInput.remove(onTextInput);
+			FlxG.stage.window.onKeyDown.remove(onKeyDown);
+			FlxG.stage.window.textInputEnabled = false;
+		}
+		#end
+		if (_editor != null && Reflect.hasField(_editor, "changeStaticStrumVisibilty")) {
+			_editor.changeStaticStrumVisibilty(EditorPrefs.showStaticStrums);
+		}
 		super.close();
 	}
 
@@ -109,7 +133,12 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		btn.onClick = function() {
 			if(typingText != null) return;
-			FlxG.stage.window.textInputEnabled = true;
+			#if (!3ds && !wiiu)
+			if (FlxG.stage != null && FlxG.stage.window != null)
+			{
+				FlxG.stage.window.textInputEnabled = true;
+			}
+			#end
 			typingText = btn.label;
 			typingVar = varName;
 			typingText.text = "";
@@ -122,11 +151,12 @@ class SongMetadataSubState extends FlxFixedSubState
 		var lbl = new FlxText(x, y + 5, 200, label, 16);
 		uiGroup.add(lbl);
 		
-		var valDisplay = new FlxText(x + 250, y + 5, 100, Std.string(Reflect.field(_song, varName)), 16);
+		var rawVal = Reflect.field(_song, varName);
+		var valDisplay = new FlxText(x + 250, y + 5, 100, Std.string(rawVal != null ? rawVal : 0), 16);
 		uiGroup.add(valDisplay);
 
 		var leftBtn = new ArkButton(x + 220, y, 25, 25, 1.0, "<", function() {
-			var val:Float = Reflect.field(_song, varName);
+			var val:Float = Reflect.field(_song, varName) ?? 0;
 			val -= change;
 			if(val < min) val = min;
 			val = Math.round(val * 100) / 100;
@@ -136,7 +166,7 @@ class SongMetadataSubState extends FlxFixedSubState
 		uiGroup.add(leftBtn);
 
 		var rightBtn = new ArkButton(x + 350, y, 25, 25, 1.0, ">", function() {
-			var val:Float = Reflect.field(_song, varName);
+			var val:Float = Reflect.field(_song, varName) ?? 0;
 			val += change;
 			if(val > max) val = max;
 			val = Math.round(val * 100) / 100;
@@ -150,11 +180,12 @@ class SongMetadataSubState extends FlxFixedSubState
 		var lbl = new FlxText(x, y + 5, 200, label, 16);
 		uiGroup.add(lbl);
 		
-		var valDisplay = new FlxText(x + 250, y + 5, 100, Std.string(Reflect.getProperty(EditorPrefs, varName)), 16);
+		var prefVal = Reflect.getProperty(EditorPrefs, varName);
+		var valDisplay = new FlxText(x + 250, y + 5, 100, Std.string(prefVal != null ? prefVal : 0), 16);
 		uiGroup.add(valDisplay);
 		
 		var leftBtn = new ArkButton(x + 220, y, 25, 25, 1.0, "<", function() {
-			var val:Float = Reflect.getProperty(EditorPrefs, varName);
+			var val:Float = Reflect.getProperty(EditorPrefs, varName) ?? 0;
 			val -= change;
 			if(val < min) val = min;
 			Reflect.setProperty(EditorPrefs, varName, val);
@@ -163,7 +194,7 @@ class SongMetadataSubState extends FlxFixedSubState
 		uiGroup.add(leftBtn);
 		
 		var rightBtn = new ArkButton(x + 350, y, 25, 25, 1.0, ">", function() {
-			var val:Float = Reflect.getProperty(EditorPrefs, varName);
+			var val:Float = Reflect.getProperty(EditorPrefs, varName) ?? 0;
 			val += change;
 			if(val > max) val = max;
 			Reflect.setProperty(EditorPrefs, varName, val);
@@ -201,6 +232,24 @@ class SongMetadataSubState extends FlxFixedSubState
 
 		uiGroup.add(btn);
 	}
+
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+
+		#if (3ds || wiiu)
+		if (typingText != null) {
+			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
+				Reflect.setField(_song, typingVar, typingText.text);
+				typingText = null;
+				typingVar = "";
+				changePage(currentPage);
+			}
+			else if (HID.keyPressed(HIDKey.X)) {
+				typingText.text = "";
+			}
+		}
+		#end
+	}
 	
 	function onTextInput(text:String):Void {
 		if (typingText != null) {
@@ -214,7 +263,12 @@ class SongMetadataSubState extends FlxFixedSubState
 				Reflect.setField(_song, typingVar, typingText.text);
 				typingText = null;
 				typingVar = "";
-				FlxG.stage.window.textInputEnabled = false;
+				#if (!3ds && !wiiu)
+				if (FlxG.stage != null && FlxG.stage.window != null)
+				{
+					FlxG.stage.window.textInputEnabled = false;
+				}
+				#end
 
 				changePage(currentPage);
 			} 
