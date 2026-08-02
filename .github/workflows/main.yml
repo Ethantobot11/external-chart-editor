@@ -21,17 +21,17 @@ jobs:
           - name: Windows
             os: windows-latest
             buildArgs: "windows -final -nosign"
-            artifactName: iOSBuild
+            artifactName: WindowBuild
             artifactPath: export/release/windows/bin
           - name: MacOS
             os: macos-latest
             buildArgs: "macos -final -nosign"
-            artifactName: iOSBuild
+            artifactName: MacOSBuild
             artifactPath: export/release/macos/bin
           - name: Linux
             os: ubuntu-latest
             buildArgs: "linux -final -nosign"
-            artifactName: iOSBuild
+            artifactName: LinuxBuild
             artifactPath: export/release/linux/bin
     uses: ./.github/workflows/build.yml
     with:
