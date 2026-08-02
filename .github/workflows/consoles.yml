@@ -49,11 +49,12 @@ jobs:
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             haxelib git hxcpp https://github.com/Haxe3DS/hxcpp.git --quiet --always
             haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
+            haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
+            haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.CPP --quiet
           fi
 
       - name: Install Console Toolchains
         run: |
-          dkp-pacman -Sy --noconfirm
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             dkp-pacman -S --noconfirm 3ds-dev citro3d citro2d
           elif [ "${{ inputs.name }}" = "Wii U" ]; then
