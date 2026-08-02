@@ -6,6 +6,10 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
+#if (3ds || wiiu)
+import haxe3ds.services.HID;
+#end
+
 class EventEditorSubState extends FlxFixedSubState {
 	var note:EditorNoteData;
 	var onSave:Void->Void;
@@ -25,11 +29,13 @@ class EventEditorSubState extends FlxFixedSubState {
 	override function create() {
 		super.create();
 		
+		#if (!3ds && !wiiu)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.add(onTextInput);
 			FlxG.stage.window.onKeyDown.add(onKeyDown);
 		}
+		#end
 
 		if (FlxG.cameras.list.length > 0)
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
@@ -67,17 +73,19 @@ class EventEditorSubState extends FlxFixedSubState {
 	}
 
 	override function close() {
+		#if (!3ds && !wiiu)
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
 			FlxG.stage.window.onTextInput.remove(onTextInput);
 			FlxG.stage.window.onKeyDown.remove(onKeyDown);
 			FlxG.stage.window.textInputEnabled = false;
 		}
+		#end
 		super.close();
 	}
 	
 	function addOptionString(x:Float, y:Float, label:String, varName:String) {
-		var lbl = new FlxText(x, y + 5, 200, label, 16); // +5 for alignment with button
+		var lbl = new FlxText(x, y + 5, 200, label, 16); 
 		uiGroup.add(lbl);
 
 		var currentVal = Std.string(Reflect.getProperty(note, varName));
@@ -86,15 +94,37 @@ class EventEditorSubState extends FlxFixedSubState {
 
 		btn.onClick = function() {
 			if(typingText != null) return;
+			
+			#if (!3ds && !wiiu)
 			if (FlxG.stage != null && FlxG.stage.window != null)
 			{
 				FlxG.stage.window.textInputEnabled = true;
 			}
+			#end
+			
 			typingText = btn.label;
 			typingVar = varName;
 			typingText.text = "";
 		};
 		uiGroup.add(btn);
+	}
+
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+
+		#if (3ds || wiiu)
+		if (typingText != null) {
+			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
+				Reflect.setProperty(note, typingVar, typingText.text);
+				typingVar = '';
+				typingText = null;
+				createOptions();
+			}
+			else if (HID.keyPressed(HIDKey.X)) {
+				typingText.text = "";
+			}
+		}
+		#end
 	}
 
 	function onTextInput(text:String):Void {
@@ -109,10 +139,12 @@ class EventEditorSubState extends FlxFixedSubState {
 				Reflect.setProperty(note, typingVar, typingText.text);
 				typingVar = '';
 				typingText = null;
+				#if (!3ds && !wiiu)
 				if (FlxG.stage != null && FlxG.stage.window != null)
 				{
 					FlxG.stage.window.textInputEnabled = false;
 				}
+				#end
 				createOptions();
 			}
 			else if (key == 8) { // Backspace
