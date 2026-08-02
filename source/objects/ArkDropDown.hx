@@ -3,118 +3,75 @@ package objects;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxCamera;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
 import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxGroup;
 
-class ArkButton extends FlxSpriteGroup
-{
-	public var bg:FlxSprite;
-	public var label:FlxText;
-	
-	public var onClick:Void->Void;
-	public var isHovered:Bool = false;
-	
-	public var baseColor:FlxColor = 0xFF444444;
-	public var hoverColor:FlxColor = 0xFF666666;
-	public var clickColor:FlxColor = 0xFF222222;
-	
-	var _camera:FlxCamera;
+class ArkDropDown extends FlxSpriteGroup {
+	public var headerBtn:ArkButton;
+	public var isOpen:Bool = false;
 
-	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float = 1, text:String, onClick:Void->Void, cam:FlxCamera = null)
-	{
+	var bgOptions:FlxTypedGroup<ArkButton>;
+	var optionLabels:Array<String>;
+	var onSelect:String->Void;
+	var uiScale:Float;
+	var cam:FlxCamera;
+	var _height:Int;
+	var autoClose:Bool;
+
+	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float, label:String, options:Array<String>, onSelect:String->Void, cam:FlxCamera, autoClose:Bool = true) {
 		super(x, y);
-		
-		this.onClick = onClick;
-		this._camera = cam;
-		
-		if (cam != null) _camera = cam;
-		
-		if (cam != null) this.cameras = [_camera];
+		this.width = width;
+		this.height = height;
+		this.uiScale = scale;
+		this.optionLabels = options;
+		this.onSelect = onSelect;
+		this.cam = cam;
+		this._height = height;
+		this.autoClose = autoClose;
 
-		bg = new FlxSprite().makeGraphic(width, height, FlxColor.WHITE);
-		bg.color = baseColor;
-		add(bg);
-
-		var borderHeight:Int = 4;
-		var border = new FlxSprite(0, height - borderHeight).makeGraphic(width, borderHeight, 0xFF000000);
-		border.alpha = 0.4;
-		add(border);
+		bgOptions = new FlxTypedGroup<ArkButton>();
+		headerBtn = new ArkButton(0, 0, width, height, scale, label + ": " + (options.length > 0 ? options[0] : "None"), toggleOpen, cam);
+		add(headerBtn);
+		add(bgOptions);
 		
-		var textSize:Int = Std.int(12 * scale);
-		if (textSize < 8) textSize = 8;
-		
-		label = new FlxText(0, 0, width, text);
-		label.setFormat(null, textSize, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
-		label.borderSize = 1;
-		
-		label.y = (height - label.height) / 2;
-		add(label);
+		if (cam != null) {
+			this.cameras = [cam];
+		}
 	}
 
-	override function update(elapsed:Float)
-	{
+	function toggleOpen() {
+		isOpen = !isOpen;
+		refreshOptions();
+	}
+
+	function refreshOptions() {
+		for (btn in bgOptions.members) {
+			if (btn != null) {
+				remove(btn);
+				btn.destroy();
+			}
+		}
+		bgOptions.clear();
+
+		if (isOpen) {
+			var currentY = _height;
+			for (i in 0...optionLabels.length) {
+				var opt = optionLabels[i];
+				var btnLabel = i + ": " + opt;
+				var btn = new ArkButton(0, currentY, Std.int(width), _height, uiScale, btnLabel, function() {
+					if (onSelect != null) onSelect(opt);
+					headerBtn.label.text = "ꜜ Type: " + opt + " ꜜ";
+					if (autoClose) toggleOpen();
+				}, cam);
+				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
+				
+				bgOptions.add(btn);
+				currentY += _height;
+			}
+		}
+	}
+
+	override function update(elapsed:Float) {
 		super.update(elapsed);
-		
-		var triggered:Bool = false;
-		var hovered:Bool = false;
-
-		#if (mobile || 3ds || wiiu)
-		if (FlxG.touches != null) {
-			for (touch in FlxG.touches.list) {
-				if (touch.overlaps(bg, cameras[0] != null ? cameras[0] : camera)) {
-					hovered = true;
-					if (touch.justReleased) {
-						triggered = true;
-					}
-				}
-			}
-		}
-		#end
-			
-		#if !3ds
-		#if !wiiu
-		if (FlxG.mouse.overlaps(bg, cameras[0] != null ? cameras[0] : camera))
-		{
-			hovered = true;
-			if (FlxG.mouse.pressed)
-			{
-				bg.color = clickColor;
-			}
-			else
-			{
-				bg.color = hoverColor;
-			}
-			
-			if (FlxG.mouse.justReleased)
-			{
-				triggered = true;
-			}
-		}
-		#end
-		#end
-
-		if (hovered)
-		{
-			isHovered = true;
-			#if (mobile || 3ds || wiiu)
-			bg.color = hoverColor;
-			#end
-		}
-		else
-		{
-			isHovered = false;
-			bg.color = baseColor;
-		}
-
-		if (triggered && onClick != null)
-		{
-			onClick();
-		}
-	}
-	
-	public function setBaseColor(col:FlxColor) {
-		this.baseColor = col;
-		this.bg.color = col;
 	}
 }
