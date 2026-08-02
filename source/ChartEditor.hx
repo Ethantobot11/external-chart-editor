@@ -1,5 +1,24 @@
 package;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.FlxState;
+import flixel.text.FlxText;
+import flixel.math.FlxMath;
+import flixel.sound.FlxSound;
+import flixel.tweens.FlxTween;
+import flixel.group.FlxGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxColor;
+import openfl.utils.ByteArray;
+import openfl.media.Sound;
+import openfl.net.FileReference;
+import haxe.Json;
+import sys.FileSystem;
+import sys.io.File;
+
 typedef InitialPsychChartData = {
 	var inst:ByteArray;
 	var voicesPlayer:ByteArray;
@@ -105,7 +124,10 @@ class ChartEditor extends FlxState
 		uiScale = 1.0;
 		#end
 
+		#if (!3ds && !wiiu)
 		FlxG.mouse.visible = true;
+		#end
+
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
@@ -242,6 +264,7 @@ class ChartEditor extends FlxState
 		customNotesList = defaultNoteTypes;
 		var path = _psychChartData.customNotePath;
 		
+		#if (!3ds && !wiiu)
 		if (path != null && path.length > 0) {
 			trace("Attempting to load custom notes from: " + path);
 			try {
@@ -263,6 +286,7 @@ class ChartEditor extends FlxState
 				trace("Error loading custom notes: " + e);
 			}
 		}
+		#end
 	}
 	
 	public var buttons:Array<ToolbarButtonConfig> = [];
@@ -277,8 +301,7 @@ class ChartEditor extends FlxState
 			{
 				label: "Exit",
 				color: 0xFFFF4444,
-				callback: function() { FlxG.switchState(new UploadState());
-				}
+				callback: function() { FlxG.switchState(new UploadState()); }
 			},
 			{
 				label: "Save",
@@ -302,8 +325,7 @@ class ChartEditor extends FlxState
 			},
 			{
 				label: "+", width: 40,
-				callback: function() { camGame.zoom = Math.min(3, camGame.zoom + 0.1);
-				}
+				callback: function() { camGame.zoom = Math.min(3, camGame.zoom + 0.1); }
 			},
 			{
 				label: "-", width: 40,
@@ -373,7 +395,7 @@ class ChartEditor extends FlxState
 		for (line in strumLines) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 		for (line in eventStrums) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 
-		#if FLX_TOUCH
+		#if (mobile || 3ds || wiiu)
 		handleTouchInput(elapsed);
 		#end
 		
@@ -383,7 +405,6 @@ class ChartEditor extends FlxState
 		updateScrollBar();
 		updateInfoText();
 	}
-
 
 	function updateCurrentSection() {
 		if (_song.notes == null) return;
@@ -438,24 +459,29 @@ class ChartEditor extends FlxState
 		}
 	}
 
-
-	#if FLX_TOUCH
+	#if (mobile || 3ds || wiiu)
 	function handleTouchInput(elapsed:Float) {
 		if (isPlaying || isDraggingBar) return;
 		if (btnNoteType.isOpen) {
-			for (touch in FlxG.touches.list) {
-				if (touch.justPressed) {
-					if (touch.overlaps(btnNoteType, camHUD)) return;
+			if (FlxG.touches != null) {
+				for (touch in FlxG.touches.list) {
+					if (touch.justPressed) {
+						if (touch.overlaps(btnNoteType, camHUD)) return;
+					}
 				}
 			}
 		}
 
-		for (touch in FlxG.touches.list) if (touch.overlaps(topBarBG, camHUD)) return;
+		if (FlxG.touches != null) {
+			for (touch in FlxG.touches.list) {
+				if (touch.overlaps(topBarBG, camHUD)) return;
+			}
+		}
 
 		var touchStartTime:Float = 0;
 		var moveThreshold = 10;
 
-		var touch = FlxG.touches.getFirst();
+		var touch = FlxG.touches != null ? FlxG.touches.getFirst() : null;
 		if (touch == null) return;
 		var worldPos = touch.getWorldPosition(camGame);
 		var worldX = worldPos.x;
@@ -653,27 +679,45 @@ class ChartEditor extends FlxState
 		var barWidth = scrollBarBg.width;
 		var barX = scrollBarBg.x;
 		var maxTime = (songLength > 0) ? songLength : 1;
-		#if mobile
-		for(touch in FlxG.touches.list) {
-			if(touch.justPressed && touch.overlaps(scrollBarBg, camHUD)) {
-				isDraggingBar = true;
-				if(isPlaying) togglePlayback();
+		
+		#if (mobile || 3ds || wiiu)
+		if (FlxG.touches != null) {
+			for(touch in FlxG.touches.list) {
+				if(touch.justPressed && touch.overlaps(scrollBarBg, camHUD)) {
+					isDraggingBar = true;
+					if(isPlaying) togglePlayback();
+				}
 			}
 		}
 		#end
+
+		#if !3ds
+		#if !wiiu
 		if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(scrollBarBg, camHUD)) {
 			isDraggingBar = true;
 			if(isPlaying) togglePlayback();
 		}
+		#end
+		#end
 
-		if (FlxG.mouse.released #if mobile || (FlxG.touches.getFirst() != null && FlxG.touches.getFirst().justReleased) #end) isDraggingBar = false;
+		var releaseCheck:Bool = false;
+		#if (mobile || 3ds || wiiu)
+		if (FlxG.touches != null && FlxG.touches.getFirst() != null && FlxG.touches.getFirst().justReleased) releaseCheck = true;
+		#end
+		#if !3ds
+		#if !wiiu
+		if (FlxG.mouse.released) releaseCheck = true;
+		#end
+		#end
+
+		if (releaseCheck) isDraggingBar = false;
 		
 		if (isDraggingBar) {
 			var mouseX:Float = 0;
-			#if mobile
-			var t = FlxG.touches.getFirst();
+			#if (mobile || 3ds || wiiu)
+			var t = FlxG.touches != null ? FlxG.touches.getFirst() : null;
 			if(t != null) mouseX = t.getScreenPosition(camHUD).x;
-			else mouseX = FlxG.mouse.getScreenPosition(camHUD).x;
+			#if !3ds #if !wiiu else mouseX = FlxG.mouse.getScreenPosition(camHUD).x; #end #end
 			#else
 			mouseX = FlxG.mouse.getScreenPosition(camHUD).x;
 			#end
@@ -777,6 +821,8 @@ class ChartEditor extends FlxState
 		var songDataStr = Json.stringify(songJson, "\t");
 		var eventsJson = { "song": { "events": savedGlobalEvents } };
 		var eventsDataStr = Json.stringify(eventsJson, "\t");
+
+		#if (!3ds && !wiiu)
 		if (isGlobalEvents) {
 			var fr2 = new FileReference();
 			fr2.save(eventsDataStr, "events.json");
@@ -787,6 +833,9 @@ class ChartEditor extends FlxState
 				File.saveContent(Sys.getCwd() + 'saves/' + _song.song + '.json', songDataStr);
 			} catch(e:Dynamic) {}
 		}
+		#else
+		trace("File saving via FileReference is bypassed on console builds.");
+		#end
 	}
 
 	function parsePsychChart(jsonString:String, ?eventsString:String) {
@@ -890,8 +939,7 @@ class ChartEditor extends FlxState
 			for (key in audioTracks.keys()) {
 				if (key != "inst") {
 					var v = audioTracks.get(key);
-					if (v.exists) { v.time = curTime; v.play();
-					}
+					if (v.exists) { v.time = curTime; v.play(); }
 				}
 			}
 		} else {
