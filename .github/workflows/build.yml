@@ -62,9 +62,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget curl build-essential make
-          curl -A "Mozilla/5.0" -L https://apt.devkitpro.org/install-devkitpro-pacman -o install-devkitpro-pacman
-          chmod +x install-devkitpro-pacman
-          sudo ./install-devkitpro-pacman --yes
+          curl -sL https://raw.githubusercontent.com/devkitPro/installer/master/install-devkitpro-pacman | sudo bash
           sudo dkp-pacman -Syu --yes
           sudo dkp-pacman -S --yes ppc-dev wut-dev wuhbtool
           echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
