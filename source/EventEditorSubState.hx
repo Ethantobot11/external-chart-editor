@@ -1,5 +1,11 @@
 package;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+
 class EventEditorSubState extends FlxFixedSubState {
 	var note:EditorNoteData;
 	var onSave:Void->Void;
@@ -10,7 +16,8 @@ class EventEditorSubState extends FlxFixedSubState {
 
 	public function new(n:EditorNoteData, onSave:Void->Void) {
 		super();
-		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		if (FlxG.cameras.list.length > 0)
+			defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 		this.note = n;
 		this.onSave = onSave;
 	}
@@ -18,10 +25,14 @@ class EventEditorSubState extends FlxFixedSubState {
 	override function create() {
 		super.create();
 		
-		FlxG.stage.window.onTextInput.add(onTextInput);
-		FlxG.stage.window.onKeyDown.add(onKeyDown);
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.onTextInput.add(onTextInput);
+			FlxG.stage.window.onKeyDown.add(onKeyDown);
+		}
 
-		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		if (FlxG.cameras.list.length > 0)
+			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xAA000000);
 		add(bg);
@@ -36,7 +47,8 @@ class EventEditorSubState extends FlxFixedSubState {
 
 		uiGroup = new FlxTypedGroup<FlxSprite>();
 		add(uiGroup);
-		uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		if (FlxG.cameras.list.length > 0)
+			uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 
 		createOptions();
 
@@ -55,8 +67,12 @@ class EventEditorSubState extends FlxFixedSubState {
 	}
 
 	override function close() {
-		FlxG.stage.window.onTextInput.remove(onTextInput);
-		FlxG.stage.window.onKeyDown.remove(onKeyDown);
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.onTextInput.remove(onTextInput);
+			FlxG.stage.window.onKeyDown.remove(onKeyDown);
+			FlxG.stage.window.textInputEnabled = false;
+		}
 		super.close();
 	}
 	
@@ -70,7 +86,10 @@ class EventEditorSubState extends FlxFixedSubState {
 
 		btn.onClick = function() {
 			if(typingText != null) return;
-			FlxG.stage.window.textInputEnabled = true;
+			if (FlxG.stage != null && FlxG.stage.window != null)
+			{
+				FlxG.stage.window.textInputEnabled = true;
+			}
 			typingText = btn.label;
 			typingVar = varName;
 			typingText.text = "";
@@ -90,7 +109,10 @@ class EventEditorSubState extends FlxFixedSubState {
 				Reflect.setProperty(note, typingVar, typingText.text);
 				typingVar = '';
 				typingText = null;
-				FlxG.stage.window.textInputEnabled = false;
+				if (FlxG.stage != null && FlxG.stage.window != null)
+				{
+					FlxG.stage.window.textInputEnabled = false;
+				}
 				createOptions();
 			}
 			else if (key == 8) { // Backspace
