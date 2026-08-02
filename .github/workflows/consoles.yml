@@ -63,6 +63,12 @@ jobs:
             dkp-pacman -S --noconfirm --needed devkitppc-gcc wut wut-tools general-tools
           fi
 
+      - name: Create Missing 3DS Romfs Directory
+        if: inputs.name == 'Nintendo 3DS'
+        run: |
+          mkdir -p assets/romfs/haxe3ds
+          touch assets/romfs/haxe3ds/version
+
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
         run: haxelib run haxe3ds -c
