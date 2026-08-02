@@ -27,7 +27,7 @@ jobs:
     name: Build
     runs-on: ${{ inputs.os }}
     container:
-      image: devkitpro/toolchain-base:latest
+      image: ${{ inputs.name == 'Nintendo 3DS' && 'devkitpro/devkitarm:latest' || 'devkitpro/devkitppc:latest' }}
     steps:
       - name: Checkout
         uses: actions/checkout@main
@@ -42,30 +42,22 @@ jobs:
         run: |
           apt-get update && apt-get install -y build-essential git wget curl
 
-      - name: Install Libraries
+      - name: Install Libraries & Fix Hxcpp (For 3DS)
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
-
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
-          haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
-          haxelib git hxcpp https://github.com/Haxe3DS/hxcpp.git --quiet --always
-          haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.CPP --quiet --always
-          haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet --always
+            haxelib git hxcpp https://github.com/Haxe3DS/hxcpp.git --quiet --always
+            haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
           fi
 
       - name: Install Console Toolchains
         run: |
-          dgp-keys || true
-          curl -LO https://apt.devkitpro.org/devkitpro.gpg
-          mv devkitpro.gpg /etc/pacman.d/
-          echo '[devkitpro]' >> /etc/pacman.conf
-          echo 'Server = https://apt.devkitpro.org' >> /etc/pacman.conf
           dkp-pacman -Sy --noconfirm
-          if [ "${{ inputs.name }}" = 'Nintendo 3DS' ]; then
+          if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             dkp-pacman -S --noconfirm 3ds-dev citro3d citro2d
-          elif [ "${{ inputs.name }}" = 'Wii U' ]; then
-            dkp-pacman -S --noconfirm ppc-dev wut-dev wuhbtool
+          elif [ "${{ inputs.name }}" = "Wii U" ]; then
+            dkp-pacman -S --noconfirm wut-dev wuhbtool
           fi
 
       - name: Compile for 3DS via Haxe3DS
