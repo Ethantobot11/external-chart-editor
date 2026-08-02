@@ -3,6 +3,7 @@ package;
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.ErrorEvent;
 import openfl.errors.Error;
+import flixel.FlxG;
 #if sys
 import sys.FileSystem;
 import sys.io.File;
@@ -19,7 +20,11 @@ class CrashHandler
 {
 	public static function init():Void
 	{
-		openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
+		if (openfl.Lib.current != null && openfl.Lib.current.loaderInfo != null)
+		{
+			openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onUncaughtError);
+		}
+		
 		#if cpp
 		untyped __global__.__hxcpp_set_critical_error_handler(onError);
 		#elseif hl
@@ -33,7 +38,7 @@ class CrashHandler
 		e.stopPropagation();
 		e.stopImmediatePropagation();
 
-		var m:String = e.error;
+		var m:String = Std.string(e.error);
 		if (Std.isOfType(e.error, Error))
 		{
 			var err = cast(e.error, Error);
@@ -44,12 +49,14 @@ class CrashHandler
 			var err = cast(e.error, ErrorEvent);
 			m = '${err.text}';
 		}
+		
 		var stack = haxe.CallStack.exceptionStack();
 		var stackLabelArr:Array<String> = [];
 		var stackLabel:String = "";
-		for (e in stack)
+		
+		for (item in stack)
 		{
-			switch (e)
+			switch (item)
 			{
 				case CFunction:
 					stackLabelArr.push("Non-Haxe (C) Function");
@@ -75,7 +82,13 @@ class CrashHandler
 		saveErrorMessage('$m\n$stackLabel');
 		#end
 
-		FlxG.stage.window.alert('$m\n$stackLabel', "Error!");
+		#if (!3ds && !wiiu)
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.alert('$m\n$stackLabel', "Error!");
+		}
+		#end
+		
 		lime.system.System.exit(1);
 	}
 
@@ -84,8 +97,8 @@ class CrashHandler
 	{
 		final log:Array<String> = [];
 
-		if (message != null && message.length > 0)
-			log.push(message);
+		if (message != null)
+			log.push(Std.string(message));
 
 		log.push(haxe.CallStack.toString(haxe.CallStack.exceptionStack(true)));
 
@@ -93,7 +106,13 @@ class CrashHandler
 		saveErrorMessage(log.join('\n'));
 		#end
 
-		FlxG.stage.window.alert(log.join('\n'), "Critical Error!");
+		#if (!3ds && !wiiu)
+		if (FlxG.stage != null && FlxG.stage.window != null)
+		{
+			FlxG.stage.window.alert(log.join('\n'), "Critical Error!");
+		}
+		#end
+		
 		lime.system.System.exit(1);
 	}
 	#end
@@ -101,7 +120,17 @@ class CrashHandler
 	#if sys
 	private static function saveErrorMessage(message:String):Void
 	{
-		final folder:String = Sys.getCwd() + 'logs/';
+		#if (3ds || wiiu)
+		return;
+		#else
+		var cwd:String = "";
+		try {
+			cwd = Sys.getCwd();
+		} catch(e:Dynamic) {
+			cwd = "";
+		}
+		
+		final folder:String = cwd + 'logs/';
 
 		try
 		{
@@ -110,8 +139,9 @@ class CrashHandler
 
 			File.saveContent(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', message);
 		}
-		catch (e:haxe.Exception)
-			trace('Couldn\'t save error message. (${e.message})');
+		catch (e:Dynamic)
+			trace('Couldn\'t save error message. (${e})');
+		#end
 	}
 	#end
 }
