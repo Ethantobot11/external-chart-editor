@@ -41,7 +41,7 @@ class UploadState extends FlxState
 
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF1A1A1A);
 		add(bg);
-		var grid = FlxGridOverlay.create(40, 40, FlxG.width * 2, FlxG.height * 2, true, 0x11FFFFFF, 0x00FFFFFF);
+		var grid = FlxGridOverlay.create(40, 40, Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), true, 0x11FFFFFF, 0x00FFFFFF);
 		add(grid);
 		var title = new FlxText(0, 40, FlxG.width, "Chart Editor Setup", 32);
 		title.setFormat(null, 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
@@ -63,11 +63,15 @@ class UploadState extends FlxState
 		add(new ModernButton(centerX - 150, startY + (btnGap * 5), "Custom Notes (Folder)", 0xFFAA44AA, function() {
 			#if ios
 			customNotePath = lime.system.System.documentsDirectory + "/CustomNotes";
+			#if sys
 			if (!sys.FileSystem.exists(customNotePath)) {
 				sys.FileSystem.createDirectory(customNotePath);
 			}
+			#end
 			statusText.text = "Using App Documents Folder";
 			trace("Custom Note Path: " + customNotePath);
+			#elseif (3ds || wiiu)
+			statusText.text = "Custom folders not supported on console.";
 			#else
 			var fileDialog = new FileDialog();
 			fileDialog.onSelect.add(function(path:String) { 
@@ -93,7 +97,11 @@ class UploadState extends FlxState
 	function loadFile(type:String) {
 		_loadingType = type;
 
-		#if ios
+		#if (ios || 3ds || wiiu)
+		#if (3ds || wiiu)
+		statusText.text = "File loading disabled on target console.";
+		return;
+		#else
 		var fileDialog = new FileDialog();
 		
 		fileDialog.onOpen.add(function(data:Dynamic) {
@@ -110,6 +118,7 @@ class UploadState extends FlxState
 
 		var filterStr = (type == "chart" || type == "events") ? "json" : "ogg,mp3";
 		fileDialog.open(filterStr, null, "Select " + type);
+		#end
 		#else
 		_fileRef = new FileReference();
 		_fileRef.addEventListener(Event.SELECT, onFileSelect);
@@ -118,7 +127,7 @@ class UploadState extends FlxState
 		#end
 	}
 
-	#if !ios
+	#if (!ios && !3ds && !wiiu)
 	function onFileSelect(e:Event) {
 		_fileRef.removeEventListener(Event.SELECT, onFileSelect);
 		_fileRef.addEventListener(Event.COMPLETE, onFileLoaded);
@@ -149,6 +158,7 @@ class UploadState extends FlxState
 	}
 
 	function processFilePath(path:String) {
+		#if sys
 		if (_loadingType == "chart" || _loadingType == "events") {
 			var content = File.getContent(path);
 			assignData(content);
@@ -156,6 +166,7 @@ class UploadState extends FlxState
 			var bytes = File.getBytes(path);
 			assignData(ByteArray.fromBytes(bytes));
 		}
+		#end
 	}
 	#end
 
