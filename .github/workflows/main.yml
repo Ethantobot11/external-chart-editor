@@ -35,7 +35,7 @@ jobs:
             artifactPath: export/release/linux/bin
           - name: Nintendo 3DS
             os: ubuntu-latest
-            buildArgs: "haxelib run haxe3ds -c -final"
+            buildArgs: "haxe3ds -c -final"
             artifactName: 3DSBuild
             artifactPath: "export/release/3ds/bin/*.3dsx"
           - name: Wii U
