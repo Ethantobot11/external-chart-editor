@@ -1,5 +1,9 @@
 package;
 
+import flixel.FlxSprite;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.util.FlxColor;
+
 typedef SongData = {
 	var song:String;
 	var bpm:Float;
@@ -131,6 +135,7 @@ class EditorNote extends FlxSprite {
 			var colIdx = data.column % 4;
 			var loadedCustom:Bool = false;
 
+			#if (!3ds && !wiiu)
 			if (customNotePath != null && data.noteType != "Normal" && data.noteType != "Hurt Note") {
 				var path = haxe.io.Path.join([customNotePath, data.noteType + ".png"]);
 				if (sys.FileSystem.exists(path)) {
@@ -140,6 +145,7 @@ class EditorNote extends FlxSprite {
 					loadedCustom = true;
 				}
 			}
+			#end
 
 			if (!loadedCustom) {
 				if (data.noteType == "Hurt Note") 
