@@ -48,6 +48,7 @@ jobs:
           haxelib run hmm install --quiet
           
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
+            haxelib remove hxcpp
             haxelib git hxcpp https://github.com/Haxe3DS/hxcpp --quiet --always
             haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
             haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
