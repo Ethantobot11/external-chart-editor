@@ -10,7 +10,9 @@
 			"openfl",
 			"flixel",
 			"flixel-addons",
-			"flixel-ui"
+			"flixel-ui",
+			"reflaxe",
+			"reflaxe.cpp"
 		],
 		"defines": [],
 		"compileAsCIA": true,
