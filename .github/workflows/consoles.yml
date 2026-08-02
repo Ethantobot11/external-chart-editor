@@ -46,9 +46,6 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
-
-          haxelib dev lime .haxelib/lime/git || true
-          haxelib dev openfl .haxelib/openfl/9,3,3 || true
           
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             haxelib remove hxcpp
