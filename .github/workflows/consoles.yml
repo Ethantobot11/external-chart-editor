@@ -46,8 +46,9 @@ jobs:
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
+          
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
-            haxelib git hxcpp https://github.com/Haxe3DS/hxcpp.git --quiet --always
+            haxelib git hxcpp https://github.com/Haxe3DS/hxcpp --quiet --always
             haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
             haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
             haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.CPP --quiet
@@ -56,9 +57,9 @@ jobs:
       - name: Install Console Toolchains
         run: |
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
-            dkp-pacman -S --noconfirm 3ds-dev citro3d citro2d
+            dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d
           elif [ "${{ inputs.name }}" = "Wii U" ]; then
-            dkp-pacman -S --noconfirm wiiu-dev
+            dkp-pacman -S --noconfirm --needed devkitppc-gcc wut wut-tools general-tools
           fi
 
       - name: Compile for 3DS via Haxe3DS
