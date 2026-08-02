@@ -28,7 +28,9 @@ class EventOptionSubState extends FlxFixedSubState
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
 	{
 		super();
+		#if !3ds
 		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		#end
 		this.note = note;
 		this.targetX = x;
 		this.targetY = y;
@@ -111,20 +113,29 @@ class EventOptionSubState extends FlxFixedSubState
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
-		// Tıklama ile kapatma (Menü dışına)
-		#if FLX_TOUCH
-		for (touch in FlxG.touches.list) {
-			if (touch.justPressed) {
-				var touch = FlxG.touches.getFirst();
-				if (!touch.overlaps(box)) closeAnim(function(){});
+		
+		#if (mobile || 3ds || wiiu)
+		if (FlxG.touches != null) {
+			for (touch in FlxG.touches.list) {
+				if (touch.justPressed) {
+					if (!touch.overlaps(box)) {
+						closeAnim(function(){});
+					}
+				}
 			}
 		}
 		#end
 
-		if(FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
+		#if !3ds
+		#if !wiiu
+		if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
 			closeAnim(function(){});
 		}
 
-		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
+		if (FlxG.keys.justPressed.ESCAPE) {
+			closeAnim(function(){});
+		}
+		#end
+		#end
 	}
 }
