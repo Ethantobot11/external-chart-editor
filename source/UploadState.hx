@@ -6,7 +6,7 @@ import flixel.text.FlxText;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
-import flixel.addons.ui.FlxGridOverlay;
+import flixel.addons.display.FlxGridOverlay;
 import openfl.utils.ByteArray;
 import openfl.net.FileReference;
 import openfl.events.Event;
