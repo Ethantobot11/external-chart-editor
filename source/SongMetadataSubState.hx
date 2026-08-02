@@ -7,7 +7,7 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
 #if (haxe3ds || cafe)
-import haxehaxe3ds.services.HID;
+import haxe3ds.services.HID;
 #end
 
 class SongMetadataSubState extends FlxFixedSubState
