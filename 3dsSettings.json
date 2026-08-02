@@ -15,7 +15,9 @@
 			"reflaxe",
 			"reflaxe.cpp"
 		],
-		"defines": [],
+		"defines": [
+		"FLX_TOUCH"
+		],
 		"compileAsCIA": true,
 		"optimizations": {
 			"o2Flag": false,
