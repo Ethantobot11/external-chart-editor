@@ -24,8 +24,8 @@ jobs:
             artifactName: WindowBuild
             artifactPath: export/release/windows/bin
           - name: MacOS
-            os: macos-latest
-            buildArgs: "macos -final -nosign"
+            os: macos-15
+            buildArgs: "macos -final"
             artifactName: MacOSBuild
             artifactPath: export/release/macos/bin
           - name: Linux
