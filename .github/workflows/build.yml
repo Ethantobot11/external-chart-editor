@@ -76,9 +76,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget curl gdebi-core
-          curl -A "Mozilla/5.0" -L https://apt.devkitpro.org/install-devkitpro-pacman -o install-devkitpro-pacman
-          chmod +x install-devkitpro-pacman
-          sudo ./install-devkitpro-pacman --yes
+          curl -A "Mozilla/5.0" -sL https://apt.devkitpro.org/install-devkitpro-pacman | sudo sh
           sudo dkp-pacman -Syu --yes
           sudo dkp-pacman -S --yes 3ds-dev citro3d citro2d
 
