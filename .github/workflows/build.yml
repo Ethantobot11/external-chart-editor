@@ -62,7 +62,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y wget curl gdebi-core
-          wget https://apt.devkitpro.org/install-devkitpro-pacman
+          curl -A "Mozilla/5.0" -L https://apt.devkitpro.org/install-devkitpro-pacman -o install-devkitpro-pacman
           chmod +x install-devkitpro-pacman
           sudo ./install-devkitpro-pacman --yes
           sudo dkp-pacman -Syu --yes
