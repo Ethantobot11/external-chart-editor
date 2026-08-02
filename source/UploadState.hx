@@ -135,9 +135,7 @@ class UploadState extends FlxState
 	#if ios
 	function processFileBytes(data:Dynamic) {
 		var bytes:ByteArray = null;
-		if (Std.isOfType(data, ByteArray)) {
-			bytes = cast data;
-		} else if (Std.isOfType(data, haxe.io.Bytes)) {
+		if (Std.isOfType(data, haxe.io.Bytes)) {
 			bytes = ByteArray.fromBytes(cast data);
 		}
 		
