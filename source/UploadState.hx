@@ -176,10 +176,16 @@ class UploadState extends FlxState
 				voicesOppData = data;
 				statusText.text = "Opponent Voices Loaded.";
 			case "chart":
-				chartData = Std.isOfType(data, ByteArray) ? (cast data : ByteArray).toString() : data;
+				if (Std.isOfType(data, haxe.io.Bytes))
+					chartData = (cast data : ByteArray).toString();
+				else
+					chartData = Std.string(data);
 				statusText.text = "Chart Data Loaded.";
 			case "events":
-				eventsData = Std.isOfType(data, ByteArray) ? (cast data : ByteArray).toString() : data;
+				if (Std.isOfType(data, haxe.io.Bytes))
+					eventsData = (cast data : ByteArray).toString();
+				else
+					eventsData = Std.string(data);
 				statusText.text = "Events Data Loaded.";
 		}
 	}
