@@ -57,6 +57,20 @@ jobs:
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
 
+      - name: Install devkitPro & Wii U Toolchain (WUT)
+        if: inputs.name == 'Wii U'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget curl build-essential make
+          curl -A "Mozilla/5.0" -L https://apt.devkitpro.org/install-devkitpro-pacman -o install-devkitpro-pacman
+          chmod +x install-devkitpro-pacman
+          sudo ./install-devkitpro-pacman --yes
+          sudo dkp-pacman -Syu --yes
+          sudo dkp-pacman -S --yes ppc-dev wut-dev wuhbtool
+          echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+          echo "DEVKITPPC=/opt/devkitpro/devkitPPC" >> $GITHUB_ENV
+          echo "/opt/devkitpro/tools/bin" >> $GITHUB_PATH
+
       - name: Install devkitPro (For 3DS)
         if: inputs.name == 'Nintendo 3DS'
         run: |
@@ -82,8 +96,24 @@ jobs:
           haxelib run lime config JAVA_HOME $JAVA_HOME_21_arm64
           haxelib run lime config ANDROID_SETUP true
 
+      - name: Setup HxCompileU (For Wii U)
+        if: inputs.name == 'Wii U'
+        run: |
+          git clone https://github.com/Slushi-Github/hxCompileU.git
+          cd hxCompileU
+          haxe build.hxml
+          cp export/haxeCompileU ../hxCompileU-bin
+          cd ..
+          ./hxCompileU-bin --prepare
+
       - name: Compile
+        if: inputs.name != 'Wii U'
         run: haxelib run lime build ${{ inputs.buildArgs }} -D ${{ inputs.assetType }}
+
+      - name: Compile for Wii U via HxCompileU
+        if: inputs.name == 'Wii U'
+        run: |
+          ./hxCompileU-bin --compile
 
       - name: Make IPA
         if: inputs.name == 'iOS'
