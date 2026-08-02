@@ -1329,6 +1329,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
+		#if (!3ds && !wiiu)
 		#if sys
 		if (__path == null || !FileSystem.exists(__path))
 		{
@@ -1411,10 +1412,15 @@ class FileReference extends EventDispatcher
 		#else
 		openfl.utils._internal.Lib.notImplemented();
 		#end
+		#else
+		trace("File upload is not supported on console targets.");
+		Timer.delay(function() {
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}, 1);
+		#end
 	}
 	#end
 
-	// Event Handlers
 	@:noCompletion private function openFileDialog_onCancel():Void
 	{
 		dispatchEvent(new Event(Event.CANCEL));
@@ -1427,12 +1433,14 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function openFileDialog_onSelect(path:String):Void
 	{
+		#if (!3ds && !wiiu)
 		#if sys
 		var fileInfo = FileSystem.stat(path);
 		creationDate = fileInfo.ctime;
 		modificationDate = fileInfo.mtime;
 		size = fileInfo.size;
 		type = "." + Path.extension(path);
+		#end
 		#end
 
 		name = Path.withoutDirectory(path);
@@ -1457,6 +1465,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function saveFileDialog_onSelect(path:String):Void
 	{
+		#if (!3ds && !wiiu)
 		#if (desktop && sys || android && sys)
 		name = Path.withoutDirectory(path);
 
@@ -1472,12 +1481,14 @@ class FileReference extends EventDispatcher
 			__path = path;
 		}
 		#end
+		#end
 
 		dispatchEvent(new Event(Event.SELECT));
 	}
 
 	@:noCompletion private function urlLoader_download_onComplete(event:Event):Void
 	{
+		#if (!3ds && !wiiu)
 		#if (desktop && sys)
 		if ((__urlLoader.data is ByteArrayData))
 		{
@@ -1497,6 +1508,7 @@ class FileReference extends EventDispatcher
 			__data = null;
 		}
 		#end
+		#end
 
 		dispatchEvent(event);
 	}
@@ -1510,13 +1522,10 @@ class FileReference extends EventDispatcher
 	{
 		if (event.status == 200)
 		{
-			// httpStatus is not dispatched if upload is successful
-			// instead complete is dispatched
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		else if (event.status != 0)
 		{
-			// dispatched only for errors
 			dispatchEvent(event);
 		}
 	}
