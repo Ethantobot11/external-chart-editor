@@ -100,13 +100,6 @@ jobs:
           haxe compile.hxml
           cd ../../../../
 
-      - name: Build Hxcpp Runtime for 3DS
-        if: inputs.name == 'Nintendo 3DS'
-        run: |
-          cd .haxelib/hxcpp/git/project
-          haxelib run hxcpp Build.xml -D3ds -Dstatic_link
-          cd ../../../../
-
       - name: Create Missing 3DS Romfs Directory
         if: inputs.name == 'Nintendo 3DS'
         run: |
