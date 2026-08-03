@@ -73,7 +73,7 @@ jobs:
 
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
-        run: haxelib run haxe3ds -c
+        run: haxelib run haxe3ds -c -D lime_use_old_deltatime
 
       - name: Compile for Wii U via HxCompileU
         if: inputs.name == 'Wii U'
