@@ -10,7 +10,7 @@ import flixel.util.FlxColor;
 import haxe3ds.services.HID;
 #end
 
-#if cpp
+#if haxe3ds
 @:cppFileCode('#include <3ds.h>')
 #end
 
