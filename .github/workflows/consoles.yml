@@ -139,6 +139,19 @@ jobs:
             echo "ERROR: Required build files do not exist. Cannot proceed."
             exit 1
           fi
+
+      - name: Archive and Upload Workspace for Inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-debug-zip
+          path: |
+            export/
+            build/
+            *.a
+            *.o
+            .haxelib/hxcpp/git/
+          if-no-files-found: ignore
           
       - name: Compile for Wii U via HxCompileU
         if: inputs.name == 'Wii U'
