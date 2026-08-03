@@ -16,6 +16,10 @@ import lime.ui.FileDialogType;
 #if sys
 import sys.io.File;
 #end
+#if haxe3ds
+import haxe3ds.services.HID;
+@:headerInclude("3ds.h")
+#end
 
 class UploadState extends FlxState
 {
@@ -226,6 +230,12 @@ class ModernButton extends flixel.group.FlxSpriteGroup {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+
+		#if haxe3ds
+		if (HID.keyPressed(HIDKey.START)) {
+		GFX.exit();
+		}
+		#end
 		if (FlxG.mouse.overlaps(bg)) {
 			bg.alpha = 1;
 			if (FlxG.mouse.justPressed && active) {
