@@ -133,21 +133,8 @@ jobs:
           export CC=arm-none-eabi-gcc
           export AR=arm-none-eabi-ar
           export RANLIB=arm-none-eabi-ranlib
+          
           haxelib run haxe3ds -c -Dnx -Dno_pch
-          HAXE3DS_EXIT_CODE=$?
-          if [ $HAXE3DS_EXIT_CODE -ne 0 ]; then
-            echo "WARNING: haxe3ds exited with code $HAXE3DS_EXIT_CODE"
-          else
-            echo "haxe3ds finished successfully!"
-          fi
-          echo "Searching everywhere for any existing libhxcpp.a..."
-          find . -name "libhxcpp.a" -print
-          if [ -d "export" ] || [ -f "export/cpp/main.cpp" ]; then
-            echo "SUCCESS: Output files found! Proceeding..."
-          else
-            echo "ERROR: Required build files do not exist. Cannot proceed."
-            exit 1
-          fi
 
       - name: Archive and Upload Workspace for Inspection
         if: always()
