@@ -16,7 +16,7 @@
 			"reflaxe.cpp"
 		],
 		"defines": [
-		"FLX_TOUCH"
+		"lime_use_old_deltatime"
 		],
 		"compileAsCIA": true,
 		"optimizations": {
