@@ -49,7 +49,7 @@ jobs:
           
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
             haxelib remove hxcpp
-            haxelib git hxcpp https://github.com/Haxe3DS/hxcpp --quiet --always
+            haxelib git hxcpp https://github.com/PsychEngine-report/hxcpp --quiet --always
             haxelib remove flixel
             haxelib git flixel https://github.com/Ethantobot11/flixel-3DS --quiet --always
             haxelib git haxe3ds https://github.com/Ethantobot11/Haxe3DS.git --quiet --always
