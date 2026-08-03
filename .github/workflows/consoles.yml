@@ -78,6 +78,13 @@ jobs:
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
 
+      - name: Set up DevkitARM Environment Variables
+        if: inputs.name == 'Nintendo 3DS'
+        run: |
+          echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
+          echo "DEVKITARM=/opt/devkitpro/devkitARM" >> $GITHUB_ENV
+          echo "/opt/devkitpro/tools/bin:/opt/devkitpro/devkitARM/bin" >> $GITHUB_PATH
+
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
         run: haxelib run haxe3ds -c
