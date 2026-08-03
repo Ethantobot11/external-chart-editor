@@ -13,12 +13,13 @@
 			"flixel-addons",
 			"flixel-ui",
 			"reflaxe",
-			"reflaxe.cpp"
+			"reflaxe.cpp",
+			"reflaxe,cpp"
 		],
 		"defines": [
 		"-D lime_use_old_deltatime"
 		],
-		"compileAsCIA": true,
+		"compileAsCIA": false,
 		"optimizations": {
 			"o2Flag": false,
 			"gFlag": false
