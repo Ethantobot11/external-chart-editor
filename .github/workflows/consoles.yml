@@ -78,12 +78,19 @@ jobs:
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
 
-      - name: Set up DevkitARM Environment Variables
+      - name: Force Cross-Compiler in Haxe3DS Toolchain
         if: inputs.name == 'Nintendo 3DS'
         run: |
-          echo "DEVKITPRO=/opt/devkitpro" >> $GITHUB_ENV
-          echo "DEVKITARM=/opt/devkitpro/devkitARM" >> $GITHUB_ENV
-          echo "/opt/devkitpro/tools/bin:/opt/devkitpro/devkitARM/bin" >> $GITHUB_PATH
+          TOOLCHAIN_XML=$(find .haxelib/hxcpp -name "linux-toolchain.xml" -o -name "haxe3ds-setup.xml" | head -n 1)
+          if [ -f "$TOOLCHAIN_XML" ]; then
+            echo "Patching toolchain file: $TOOLCHAIN_XML"
+            sed -i 's/<compiler id="gcc" name="g++"/<compiler id="gcc" name="arm-none-eabi-g++"/g' "$TOOLCHAIN_XML"
+            sed -i 's/<compiler id="linker" name="g++"/<compiler id="linker" name="arm-none-eabi-g++"/g' "$TOOLCHAIN_XML"
+          fi
+          
+          echo "CXX=arm-none-eabi-g++" >> $GITHUB_ENV
+          echo "CC=arm-none-eabi-gcc" >> $GITHUB_ENV
+          echo "AR=arm-none-eabi-ar" >> $GITHUB_ENV
 
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
