@@ -16,7 +16,7 @@
 			"reflaxe.cpp"
 		],
 		"defines": [
-		"lime_use_old_deltatime"
+		"-D lime_use_old_deltatime"
 		],
 		"compileAsCIA": true,
 		"optimizations": {
