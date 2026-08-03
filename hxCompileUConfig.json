@@ -1,0 +1,37 @@
+{
+	"extraLibs": [
+		"lime",
+		"openfl",
+		"flixel",
+		"flixel-addons",
+		"flixel-ui",
+		"reflaxe",
+		"reflaxe.cpp",
+		"hxu_wut",
+		"hxu_vorbis"
+	],
+	"programVersion": ">=1.5.3",
+	"projectDefines": [
+		"-D lime_use_old_deltatime"
+	],
+	"haxeConfig": {
+		"errorReportingStyle": "pretty",
+		"othersOptions": [],
+		"hxMain": "Main",
+		"outDir": "output",
+		"debugMode": false,
+		"sourceDir": "source"
+	},
+	"wiiuConfig": {
+		"convertToWUHB": true,
+		"wuhbConfig": {
+			"shortName": "ChartEditor",
+			"name": "Chart Editor Wii U ?????",
+			"author": "ArkoeLabs ?"
+		},
+		"projectName": "ChartEditor",
+		"isAPlugin": false,
+		"consoleIP": ""
+	},
+	"deleteTempFiles": true
+}
