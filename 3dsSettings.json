@@ -9,15 +9,15 @@
 			"haxe3ds",
 			"lime",
 			"openfl",
+			"hxcpp",
 			"flixel",
 			"flixel-addons",
 			"flixel-ui",
 			"reflaxe",
-			"reflaxe.cpp",
-			"reflaxe,cpp"
+			"reflaxe.cpp"
 		],
 		"defines": [
-		"-D lime_use_old_deltatime"
+		"-Dlime_use_old_deltatime"
 		],
 		"compileAsCIA": false,
 		"optimizations": {
