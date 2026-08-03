@@ -15,7 +15,7 @@ import lime.system.System as LimeSystem;
 @:cppFileCode('#include <windows.h>')
 #elseif (ios || mac)
 @:cppFileCode('#include <mach-o/arch.h>')
-#else
+#elseif (!nx)
 @:headerInclude('sys/utsname.h')
 #end
 #end
@@ -105,29 +105,25 @@ class FPSCounter extends TextField
 	#if windows
 	@:functionCode('
 		SYSTEM_INFO osInfo;
-
 		GetSystemInfo(&osInfo);
-
 		switch(osInfo.wProcessorArchitecture)
 		{
-			case 9:
-				return ::String("x86_64");
-			case 5:
-				return ::String("ARM");
-			case 12:
-				return ::String("ARM64");
-			case 6:
-				return ::String("IA-64");
-			case 0:
-				return ::String("x86");
-			default:
-				return ::String("Unknown");
+			case 9: return ::String("x86_64");
+			case 5: return ::String("ARM");
+			case 12: return ::String("ARM64");
+			case 6: return ::String("IA-64");
+			case 0: return ::String("x86");
+			default: return ::String("Unknown");
 		}
 	')
 	#elseif (ios || mac)
 	@:functionCode('
 		const NXArchInfo *archInfo = NXGetLocalArchInfo();
 		return ::String(archInfo == NULL ? "Unknown" : archInfo->name);
+	')
+	#elseif nx
+	@:functionCode('
+		return ::String("ARMv6K");
 	')
 	#else
 	@:functionCode('
