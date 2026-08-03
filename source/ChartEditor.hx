@@ -25,7 +25,7 @@ class ChartEditor extends FlxState
 		'Hurt Note',
 		'GF Sing',
 		'No Animation'
-	];--
+	];
 	var _song:SongData;
 	var _psychChartData:InitialPsychChartData; 
 	var _allNotes:Array<EditorNoteData> = [];
