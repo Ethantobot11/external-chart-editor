@@ -41,7 +41,6 @@ class Main extends Sprite
 	{
 		#if haxe3ds
 		GFX.init();
-		CFG.init();
 		Console.init(BOTTOM);
 		#end
 		Lib.current.addChild(new Main());
@@ -84,10 +83,9 @@ class Main extends Sprite
 			resetSpriteCache(FlxG.game);
 		});
 
-		#if haxe3ds
-		GFX.exit();
-		CFG.exit();
-		#end
+		//#if haxe3ds
+		//GFX.exit();
+		//#end
 	}
 
 	static function resetSpriteCache(sprite:Sprite):Void {
