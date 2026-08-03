@@ -67,6 +67,24 @@ jobs:
           haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
           haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.CPP --quiet
 
+      - name: Inject HxCU_Meta.json for Haxelibs
+        if: inputs.name == 'Wii U'
+        run: |
+          for libDir in .haxelib/*/; do
+            if [ -d "$libDir" ] && [ ! -f "${libDir}HxCU_Meta.json" ]; then
+              libName=$(basename "$libDir")
+              echo "{
+                \"libVersion\": \"1.0.0\",
+                \"customUDPPort\": \"\",
+                \"haxeLibs\": [],
+                \"wiiuLibs\": [],
+                \"mainDefines\": [],
+                \"cDefines\": [],
+                \"cppDefines\": []
+              }" > "${libDir}HxCU_Meta.json"
+            fi
+          done
+
       - name: Install Console Toolchains
         run: |
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
