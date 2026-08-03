@@ -28,8 +28,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	public function new(songData:SongData, editor:ChartEditor)
 	{
 		super();
-		if (FlxG.cameras.list.length > 0)
-			defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 		this._song = songData;
 		this._editor = editor;
 	}

@@ -121,10 +121,13 @@ class EventOptionSubState extends FlxFixedSubState
 		}
 		#end
 
+		#if (!FLX_TOUCH && !haxe3ds && !cafe)
 		if(FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
 			closeAnim(function(){});
 		}
+		
 
 		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
+		#end
 	}
 }
