@@ -104,7 +104,7 @@ jobs:
         if: inputs.name == 'Nintendo 3DS'
         run: |
           cd .haxelib/hxcpp/git/project
-          haxelib run hxcpp build.xml -D3ds -Dstatic_link
+          haxelib run hxcpp Build.xml -D3ds -Dstatic_link
           cd ../../../../
 
       - name: Create Missing 3DS Romfs Directory
