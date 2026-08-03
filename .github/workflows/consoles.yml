@@ -88,16 +88,12 @@ jobs:
       - name: Install Console Toolchains
         run: |
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
-            dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d general-tools
+            dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d general-tools 3ds-makerom
             mkdir -p /opt/devkitpro/tools/bin
             wget -q https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip -O bannertool.zip
             unzip -q bannertool.zip -d bannertool_extracted
             find bannertool_extracted -type f -name "bannertool" -exec cp {} /opt/devkitpro/tools/bin/ \;
             chmod +x /opt/devkitpro/tools/bin/bannertool
-            wget -q https://github.com/3DSGuy/Project_CTR/releases/download/makerom-v0.19.0/makerom-v0.19.0-ubuntu_x86_64.zip -O makerom.zip
-            unzip -q makerom.zip -d makerom_extracted
-            find makerom_extracted -type f -name "makerom" -exec cp {} /opt/devkitpro/tools/bin/ \;
-            chmod +x /opt/devkitpro/tools/bin/makerom
           elif [ "${{ inputs.name }}" = "Wii U" ]; then
             dkp-pacman -S --noconfirm --needed devkitppc-gcc wut wut-tools general-tools
           fi
