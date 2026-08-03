@@ -94,7 +94,10 @@ jobs:
 
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
-        run: haxelib run haxe3ds -c
+        run: |
+              export CXX=arm-none-eabi-g++
+              export CC=arm-none-eabi-gcc
+              haxelib run haxe3ds -c -Dxcompile
 
       - name: Compile for Wii U via HxCompileU
         if: inputs.name == 'Wii U'
