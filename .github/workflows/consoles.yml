@@ -52,7 +52,7 @@ jobs:
             haxelib git hxcpp https://github.com/Haxe3DS/hxcpp --quiet --always
             haxelib remove flixel
             haxelib git flixel https://github.com/Ethantobot11/flixel-3DS --quiet --always
-            haxelib git haxe3ds https://github.com/Haxe3DS/haxe3ds.git --quiet --always
+            haxelib git haxe3ds https://github.com/Ethantobot11/Haxe3DS.git --quiet --always
             haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
             haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.CPP --quiet
           fi
@@ -73,7 +73,7 @@ jobs:
 
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
-        run: haxelib run haxe3ds -c -D lime_use_old_deltatime
+        run: haxelib run haxe3ds -c
 
       - name: Compile for Wii U via HxCompileU
         if: inputs.name == 'Wii U'
