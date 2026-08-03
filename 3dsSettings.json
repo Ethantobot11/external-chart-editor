@@ -15,10 +15,8 @@
 			"reflaxe",
 			"reflaxe.cpp"
 		],
-		"defines": [
-		"lime_use_old_deltatime"
-		],
-		"compileAsCIA": false,
+		"defines": [],
+		"compileAsCIA": true,
 		"optimizations": {
 			"o2Flag": false,
 			"gFlag": false
