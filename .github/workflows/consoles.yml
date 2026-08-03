@@ -42,7 +42,7 @@ jobs:
         run: |
           apt-get update && apt-get install -y build-essential git wget curl
 
-      - name: Install Libraries & Fix Hxcpp (For 3DS)
+      - name: Install Libraries & Fix Hxcpp
         run: |
           haxelib install hmm --quiet
           haxelib run hmm install --quiet
@@ -53,6 +53,15 @@ jobs:
             haxelib remove flixel
             haxelib git flixel https://github.com/Ethantobot11/flixel-3DS --quiet --always
             haxelib git haxe3ds https://github.com/Ethantobot11/Haxe3DS.git --quiet --always
+          elif [ "${{ inputs.name }}" = "Wii U" ]; then
+            haxelib git hxu_wut https://github.com/Haxe-WiiU/HxU_WUT --quiet || true
+            haxelib git hxu_libnotifications https://github.com/Haxe-WiiU/HxU_LibNotifications --quiet || true
+            haxelib git hxu_libmappedmemory https://github.com/Haxe-WiiU/HxU_LibMappedMemory --quiet || true
+            haxelib git slushiutilsU https://github.com/Haxe-WiiU/SlushiUtilsU --quiet || true
+            haxelib git hxu_sdl2 https://github.com/Haxe-WiiU/HxU_SDL2 --quiet || true
+            haxelib git hxu_sdl_fontcache https://github.com/Haxe-WiiU/HxU_SDL_FontCache --quiet || true
+            haxelib git hxu_jansson https://github.com/Haxe-WiiU/HxU_Jansson --quiet || true
+            haxelib git hxu_vorbis https://github.com/Haxe-WiiU/HxU_Vorbis --quiet || true
           fi
 
           haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
