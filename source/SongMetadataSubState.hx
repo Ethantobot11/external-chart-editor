@@ -28,7 +28,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	public function new(songData:SongData, editor:ChartEditor)
 	{
 		super();
-		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		this._song = songData;
 		this._editor = editor;
 	}
@@ -67,7 +67,7 @@ class SongMetadataSubState extends FlxFixedSubState
 		uiGroup = new FlxTypedGroup<FlxSprite>();
 		add(uiGroup);
 		if (FlxG.cameras.list.length > 0)
-			uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+			uiGroup.cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 
 		changePage("Meta");
 

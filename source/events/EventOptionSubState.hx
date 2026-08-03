@@ -28,7 +28,7 @@ class EventOptionSubState extends FlxFixedSubState
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
 	{
 		super();
-		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
 		this.note = note;
 		this.targetX = x;
 		this.targetY = y;
