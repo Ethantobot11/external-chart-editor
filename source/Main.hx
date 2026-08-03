@@ -16,6 +16,14 @@ import lime.app.Application;
 
 import debug.FPSCounter;
 
+#if haxe3ds
+import haxe3ds.Console;
+
+import haxe3ds.services.APT;
+import haxe3ds.services.GFX;
+import haxe3ds.services.HID;
+#end
+
 class Main extends Sprite
 {
 	public var fpsVar:FPSCounter;
@@ -31,6 +39,11 @@ class Main extends Sprite
 	// You can pretty much ignore everything from here on - your code should go in your states.
 	public static function main():Void
 	{
+		#if haxe3ds
+		GFX.init();
+		CFG.init();
+		Console.init(BOTTOM);
+		#end
 		Lib.current.addChild(new Main());
 	}
 
@@ -70,6 +83,11 @@ class Main extends Sprite
 			if (FlxG.game != null)
 			resetSpriteCache(FlxG.game);
 		});
+
+		#if haxe3ds
+		GFX.exit();
+		CFG.exit();
+		#end
 	}
 
 	static function resetSpriteCache(sprite:Sprite):Void {
