@@ -204,7 +204,9 @@ class UploadState extends FlxState
 		}
 	}
 }
-
+#if haxe3ds
+@:headerInclude("3ds.h")
+#end
 class ModernButton extends flixel.group.FlxSpriteGroup {
 	public var bg:FlxSprite;
 	public var label:FlxText;
