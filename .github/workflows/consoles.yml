@@ -100,6 +100,14 @@ jobs:
           haxe compile.hxml
           cd ../../../../
 
+      - name: Build HXCPP Runner and Tools
+        run: |
+          cd .haxelib/hxcpp/git/tools/run
+          haxe compile.hxml
+          cd ../hxcpp
+          haxe compile.hxml
+          cd ../../../../
+
       - name: Create Missing 3DS Romfs Directory
         if: inputs.name == 'Nintendo 3DS'
         run: |
