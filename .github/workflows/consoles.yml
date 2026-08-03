@@ -126,7 +126,7 @@ jobs:
           export DEVKITPRO=/opt/devkitpro
           export DEVKITPPC=${DEVKITPRO}/devkitPPC
           export PATH=${DEVKITPPC}/bin:${DEVKITPRO}/tools/bin:$PATH
-          git clone https://github.com/Slushi-Github/hxCompileU.git
+          git clone https://github.com/PsychEngine-report/hxCompileU.git
           cd hxCompileU
           haxe build.hxml
           cp export/haxeCompileU ../haxeCompileU
