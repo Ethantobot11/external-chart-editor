@@ -92,19 +92,19 @@ jobs:
           elif [ "${{ inputs.name }}" = "Wii U" ]; then
             dkp-pacman -S --noconfirm --needed devkitppc-gcc wut wut-tools general-tools
           fi
-
-      - name: Build Hxcpp Runtime for 3DS
-        if: inputs.name == 'Nintendo 3DS'
-        run: |
-          cd .haxelib/hxcpp/git/project
-          haxelib run hxcpp build.xml -D3ds -Dstatic_link
-          cd ../../../../
           
       - name: Build Hxcpp Tooling (For 3DS)
         if: inputs.name == 'Nintendo 3DS'
         run: |
           cd .haxelib/hxcpp/git/tools/hxcpp
           haxe compile.hxml
+          cd ../../../../
+
+      - name: Build Hxcpp Runtime for 3DS
+        if: inputs.name == 'Nintendo 3DS'
+        run: |
+          cd .haxelib/hxcpp/git/project
+          haxelib run hxcpp build.xml -D3ds -Dstatic_link
           cd ../../../../
 
       - name: Create Missing 3DS Romfs Directory
