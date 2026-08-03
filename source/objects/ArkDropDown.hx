@@ -1,15 +1,9 @@
 package objects;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.FlxCamera;
-import flixel.group.FlxSpriteGroup;
-import flixel.group.FlxGroup;
-
 class ArkDropDown extends FlxSpriteGroup {
 	public var headerBtn:ArkButton;
 	public var isOpen:Bool = false;
-
+	
 	var bgOptions:FlxTypedGroup<ArkButton>;
 	var optionLabels:Array<String>;
 	var onSelect:String->Void;
@@ -17,7 +11,6 @@ class ArkDropDown extends FlxSpriteGroup {
 	var cam:FlxCamera;
 	var _height:Int;
 	var autoClose:Bool;
-
 	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float, label:String, options:Array<String>, onSelect:String->Void, cam:FlxCamera, autoClose:Bool = true) {
 		super(x, y);
 		this.width = width;
@@ -32,11 +25,7 @@ class ArkDropDown extends FlxSpriteGroup {
 		bgOptions = new FlxTypedGroup<ArkButton>();
 		headerBtn = new ArkButton(0, 0, width, height, scale, label + ": " + (options.length > 0 ? options[0] : "None"), toggleOpen, cam);
 		add(headerBtn);
-		add(bgOptions);
-		
-		if (cam != null) {
-			this.cameras = [cam];
-		}
+		this.cameras = [cam];
 	}
 
 	function toggleOpen() {
@@ -45,11 +34,9 @@ class ArkDropDown extends FlxSpriteGroup {
 	}
 
 	function refreshOptions() {
-		for (btn in bgOptions.members) {
-			if (btn != null) {
-				remove(btn);
-				btn.destroy();
-			}
+		for (btn in bgOptions) {
+			remove(btn);
+			btn.destroy();
 		}
 		bgOptions.clear();
 
@@ -65,6 +52,7 @@ class ArkDropDown extends FlxSpriteGroup {
 				}, cam);
 				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
 				
+				add(btn);
 				bgOptions.add(btn);
 				currentY += _height;
 			}
@@ -73,5 +61,8 @@ class ArkDropDown extends FlxSpriteGroup {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		if(isOpen) {
+			bgOptions.update(elapsed);
+		}
 	}
 }

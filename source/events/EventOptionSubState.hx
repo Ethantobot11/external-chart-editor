@@ -28,9 +28,7 @@ class EventOptionSubState extends FlxFixedSubState
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
 	{
 		super();
-		#if !haxe3ds
 		defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
-		#end
 		this.note = note;
 		this.targetX = x;
 		this.targetY = y;
@@ -113,29 +111,20 @@ class EventOptionSubState extends FlxFixedSubState
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
-		
-		#if (mobile || haxe3ds || cafe)
-		if (FlxG.touches != null) {
-			for (touch in FlxG.touches.list) {
-				if (touch.justPressed) {
-					if (!touch.overlaps(box)) {
-						closeAnim(function(){});
-					}
-				}
+		// Tıklama ile kapatma (Menü dışına)
+		#if (FLX_TOUCH || haxe3ds || cafe)
+		for (touch in FlxG.touches.list) {
+			if (touch.justPressed) {
+				var touch = FlxG.touches.getFirst();
+				if (!touch.overlaps(box)) closeAnim(function(){});
 			}
 		}
 		#end
 
-		#if !haxe3ds
-		#if !cafe
-		if (FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
+		if(FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
 			closeAnim(function(){});
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE) {
-			closeAnim(function(){});
-		}
-		#end
-		#end
+		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
 	}
 }

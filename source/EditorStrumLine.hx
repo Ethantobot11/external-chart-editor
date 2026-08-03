@@ -1,12 +1,5 @@
 package;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.addons.display.FlxBackdrop;
-import flixel.addons.display.FlxGridOverlay;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import flixel.group.FlxSpriteGroup;
-
 class EditorStrumLine extends FlxSpriteGroup
 {
 	// Grid and Visuals
@@ -14,13 +7,11 @@ class EditorStrumLine extends FlxSpriteGroup
 	public var separator:FlxSprite;
 	public var strums:FlxTypedGroup<ChartEditorHelpers.EditorStrum>;
 	public var icon:FlxSprite;
-	
 	// Data
 	public var laneCount:Int;
 	public var isEvent:Bool;
 	public var startColumn:Int; 
 	public var laneIndex:Int;
-
 	public function new(x:Float, y:Float, laneCount:Int, startColumn:Int, isEvent:Bool = false, laneIndex:Int = 0)
 	{
 		super(x, y);
@@ -49,7 +40,7 @@ class EditorStrumLine extends FlxSpriteGroup
 			else sepColor = 0xFF00FFFF;
 		}
 		
-		separator = new FlxSprite((startColumn == -2 ? 0 : totalWidth) - 1, -FlxG.height).makeGraphic(2, Std.int(height), sepColor);
+		separator = new FlxSprite((startColumn == -2 ? 0 : totalWidth) - 1, -FlxG.height).makeGraphic(2, height, sepColor);
 		separator.alpha = 0.5;
 		separator.scrollFactor.set(0, 0);
 		add(separator);
@@ -70,7 +61,6 @@ class EditorStrumLine extends FlxSpriteGroup
 			
 			strums.add(strum);
 		}
-		add(strums);
 
 		// 4. Icon
 		if (!isEvent)
@@ -78,8 +68,7 @@ class EditorStrumLine extends FlxSpriteGroup
 			icon = new FlxSprite();
 			var charName = (startColumn < 4) ? "dad" : "bf";
 			var iconPath = "assets/images/icons/icon-" + charName + ".png";
-			if (!openfl.utils.Assets.exists(iconPath)) 
-				iconPath = "assets/images/icons/icon-face.png";
+			if (!openfl.utils.Assets.exists(iconPath)) iconPath = "assets/images/icons/icon-face.png";
 
 			if (openfl.utils.Assets.exists(iconPath)) {
 				icon.loadGraphic(iconPath, true, 150, 150);
@@ -91,15 +80,12 @@ class EditorStrumLine extends FlxSpriteGroup
 				icon.y = y - (gridSize) - icon.height - 10;
 				
 				if (startColumn < 4) icon.color = 0xFFCCCCCC;
-				add(icon);
 			}
 		}
 	}
 	
 	public function updateGridPosition(strumLineY:Float, gridY:Float)
 	{
-		if (gridBG != null) {
-			gridBG.y = strumLineY % ChartEditor.GRID_SIZE;
-		}
+		gridBG.y = strumLineY % ChartEditor.GRID_SIZE;
 	}
 }
