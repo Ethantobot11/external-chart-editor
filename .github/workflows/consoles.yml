@@ -67,6 +67,13 @@ jobs:
           haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
           haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.cpp --quiet
 
+      - name: Relocate haxe3ds_Utils.h for Compilation
+        run: |
+          if [ -f ".haxelib/haxe3ds/git/assets/include/haxe3ds_Utils.h" ]; then
+            cp .haxelib/haxe3ds/git/assets/include/haxe3ds_Utils.h .haxelib/haxe3ds/git/src/haxe3ds/services/
+            echo "Successfully copied header file!"
+          fi
+
       - name: Inject HxCU_Meta.json for Haxelibs
         if: inputs.name == 'Wii U'
         run: |
