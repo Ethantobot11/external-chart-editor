@@ -17,7 +17,7 @@
 	"haxeConfig": {
 		"errorReportingStyle": "pretty",
 		"othersOptions": [],
-		"hxMain": "Main",
+		"hxMain": "source/Main",
 		"outDir": "output",
 		"debugMode": false,
 		"sourceDir": "source"
