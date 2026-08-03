@@ -18,6 +18,7 @@ import sys.io.File;
 #end
 #if haxe3ds
 import haxe3ds.services.HID;
+import haxe3ds.services.GFX;
 @:headerInclude("3ds.h")
 #end
 
