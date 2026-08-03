@@ -114,6 +114,17 @@ jobs:
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
 
+      - name: Build HXCPP Static Library for 3DS
+        if: inputs.name == 'Nintendo 3DS'
+        run: |
+          export DEVKITPRO=/opt/devkitpro
+          export DEVKITARM=${DEVKITPRO}/devkitARM
+          export PATH=${DEVKITARM}/bin:${DEVKITPRO}/tools/bin:$PATH
+          
+          cd .haxelib/hxcpp/git/project
+          haxelib run hxcpp Build.xml -Dnx -Dstatic_link -Dstatic
+          cd ../../../../
+
       - name: Compile for 3DS via Haxe3DS
         if: inputs.name == 'Nintendo 3DS'
         run: |
