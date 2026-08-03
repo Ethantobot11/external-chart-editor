@@ -6,8 +6,12 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
-#if (haxe3ds || cafe)
+#if haxe3ds
 import haxe3ds.services.HID;
+#end
+
+#if cpp
+@:cppFileCode('#include <3ds.h>')
 #end
 
 class SongMetadataSubState extends FlxFixedSubState
@@ -235,7 +239,7 @@ class SongMetadataSubState extends FlxFixedSubState
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 
-		#if (haxe3ds || cafe)
+		#if haxe3ds
 		if (typingText != null) {
 			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
 				Reflect.setField(_song, typingVar, typingText.text);
