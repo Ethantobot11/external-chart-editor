@@ -52,11 +52,11 @@ jobs:
             buildArgs: "3ds -D haxe3ds -D final"
             artifactName: 3DSBuild
             artifactPath: "export/release/3ds/bin/*.cia"
-          - name: Wii U
-            os: ubuntu-latest
-            buildArgs: "wiiu -D final -D cafe"
-            artifactName: WiiUBuild
-            artifactPath: "export/release/wiiu/bin/*.wuhb"
+         #- name: Wii U
+         #  os: ubuntu-latest
+         #  buildArgs: "wiiu -D final -D cafe"
+         #  artifactName: WiiUBuild
+         #  artifactPath: "export/release/wiiu/bin/*.wuhb"
     uses: ./.github/workflows/consoles.yml
     with:
       name: ${{ matrix.name }}
