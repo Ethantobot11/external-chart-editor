@@ -25,7 +25,7 @@ class EventEditorSubState extends FlxFixedSubState {
 	public function new(n:EditorNoteData, onSave:Void->Void) {
 		super();
 		if (FlxG.cameras.list.length > 0)
-			defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+			camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 		this.note = n;
 		this.onSave = onSave;
 	}
@@ -58,7 +58,7 @@ class EventEditorSubState extends FlxFixedSubState {
 		uiGroup = new FlxTypedGroup<FlxSprite>();
 		add(uiGroup);
 		if (FlxG.cameras.list.length > 0)
-			uiGroup.defaultCamera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+			uiGroup.camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
 
 		createOptions();
 
