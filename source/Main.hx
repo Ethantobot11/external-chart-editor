@@ -45,9 +45,14 @@ class Main extends Sprite
 		RomFS.init();
 		GFX.init();
 		Console.init(BOTTOM);
-		#end
-			
-		Lib.current.addChild(new Main());
+		
+	    Sys.println("Boot test successful!");
+	    while (APT.mainLoop()) {
+	    }
+	    GFX.exit();
+	    #else
+	    Lib.current.addChild(new Main());
+	    #end
 	}
 
 	public function new()
