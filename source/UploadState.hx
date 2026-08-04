@@ -241,7 +241,7 @@ class UploadState extends FlxState
 			if (_loadingType == "chart" || _loadingType == "events") {
 				assignData(File.getContent(selectedPath));
 			} else {
-				assignData(ByteArray.fromFile(selectedPath));
+				assignData(ByteArray.fromBytes(sys.io.File.getBytes(selectedPath)));
 			}
 			#end
 		}
