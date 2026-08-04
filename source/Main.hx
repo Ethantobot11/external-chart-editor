@@ -23,7 +23,6 @@ import haxe3ds.services.APT;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
 import haxe3ds.services.RomFS;
-import haxe3ds.services.FS;
 #end
 
 class Main extends Sprite
