@@ -97,7 +97,6 @@ class EditorStrumLine extends BaseSpriteGroup
 		separator.alpha = 0.5;
 		add(separator);
 
-		// 3. Strums (3DS Native Array implementation)
 		strums = [];
 		for (i in 0...laneCount)
 		{
@@ -110,7 +109,6 @@ class EditorStrumLine extends BaseSpriteGroup
 			if (isEvent && startColumn == -2) strum.color = 0xFF00FFFF;
 			
 			strums.push(strum);
-			add(strum);
 		}
 
 		// 4. Icon
@@ -127,7 +125,6 @@ class EditorStrumLine extends BaseSpriteGroup
 				icon.x = this.x + (totalWidth - icon.width) / 2;
 				icon.y = this.y - gridSize - icon.height - 10;
 				if (startColumn < 4) icon.color = 0xFFCCCCCC;
-				add(icon);
 			}
 		}
 
@@ -172,7 +169,6 @@ class EditorStrumLine extends BaseSpriteGroup
 			
 			strums.add(strum);
 		}
-		add(strums);
 
 		if (!isEvent)
 		{
@@ -192,7 +188,6 @@ class EditorStrumLine extends BaseSpriteGroup
 				
 				if (startColumn < 4) icon.color = 0xFFCCCCCC;
 			}
-			add(icon);
 		}
 		#end
 	}
