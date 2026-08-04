@@ -74,7 +74,7 @@ class UploadState extends FlxState
 
 	function scanAndLoad(type:String)
 	{
-		#if (haxe3ds || sys)
+		#if haxe3ds
 		var targetDir = "sdmc:/charts/";
 		if (!FileSystem.exists(targetDir)) {
 			FileSystem.createDirectory(targetDir);
