@@ -57,9 +57,9 @@ class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
 		#end
 
 		headerBtn = new ArkButton(0, 0, width, height, scale, label + ": " + (options.length > 0 ? options[0] : "None"), toggleOpen, cam);
-		add(headerBtn);
 		
 		#if !haxe3ds
+		add(headerBtn);
 		this.cameras = [cam];
 		#end
 	}
@@ -94,12 +94,12 @@ class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
 					if (autoClose) toggleOpen();
 				}, cam);
 				
-				#if !haxe3ds
 				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
+				
+				#if !haxe3ds
 				add(btn);
 				bgOptions.add(btn);
 				#else
-				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
 				bgOptions.push(btn);
 				#end
 
@@ -110,6 +110,7 @@ class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
 
 	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
 		super.update(delta);
+		headerBtn.update(delta);
 		if(isOpen) {
 			#if !haxe3ds
 			bgOptions.update(elapsed);
