@@ -1,5 +1,11 @@
 package;
 
+#if haxe3ds
+import citro.state.CitroState;
+import citro.object.CitroText;
+import citro.object.CitroSprite;
+typedef BaseState = CitroState;
+#else
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
@@ -7,6 +13,9 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.addons.display.FlxGridOverlay;
+typedef BaseState = FlxState;
+#end
+
 #if !haxe3ds
 import openfl.utils.ByteArray;
 import openfl.net.FileReference;
@@ -24,48 +33,93 @@ import sys.FileSystem;
 #if haxe3ds
 import haxe3ds.services.HID;
 import haxe3ds.services.GFX;
+import citro.state.CitroState;
 @:headerInclude("3ds.h")
 #end
 
-class UploadState extends FlxState
+class UploadState extends #if haxe3ds CitroState #else FlxState #end
 {
 	// Data Containers
+	#if !haxe3ds
 	var instData:ByteArray;
 	var voicesData:ByteArray;
 	var voicesOppData:ByteArray;
+	#else
+	var instData:String;
+	var voicesData:String;
+	var voicesOppData:String;
+	#end
 	var chartData:String;
 	var eventsData:String;
 	var customNotePath:String = "";
 
 	// UI
+	#if haxe3ds
+	var statusText:CitroText;
+	var browseListText:CitroText;
+	#else
 	var statusText:FlxText;
-	var btnContinue:ModernButton;
+	var browseListText:FlxText;
+	#end
+
+	var btnContinue:Dynamic; // Handled per platform wrapper or conditional type
 	
 	// Logic
+	#if !haxe3ds
 	var _fileRef:FileReference;
+	#end
 	var _loadingType:String;
 
-	// 3DS Directory Browsing State
+	// Directory Browsing State
 	var isBrowsing:Bool = false;
 	var filesList:Array<String> = [];
 	var browseIndex:Int = 0;
-	var browseListText:FlxText;
 
 	override function create()
 	{
 		super.create();
 
+		#if haxe3ds
+		// Citro 3DS Setup Initialization
+		var bg = new CitroSprite(0, 0);
+		bg.makeGraphic(400, 240, 0xFF1A1A1A);
+		add(bg);
+
+		var title = new CitroText(0, 10, "3DS Chart Editor Setup");
+		title.screenCenterX();
+		add(title);
+
+		var startY = 45;
+		var btnGap = 32;
+
+		add(new CitroButton(50, startY, "Load Inst (.ogg)", 0xFF4488FF, function() { start3DSBrowsing("inst"); }));
+		add(new CitroButton(50, startY + btnGap, "Load Voices (.ogg)", 0xFF44FF88, function() { start3DSBrowsing("voices"); }));
+		add(new CitroButton(50, startY + (btnGap * 2), "Load Chart (.json)", 0xFFFFFF44, function() { start3DSBrowsing("chart"); }));
+		add(new CitroButton(50, startY + (btnGap * 3), "Load Events (.json)", 0xFFDD44DD, function() { start3DSBrowsing("events"); }));
+
+		statusText = new CitroText(0, 205, "Waiting for Inst...");
+		statusText.screenCenterX();
+		add(statusText);
+
+		browseListText = new CitroText(0, 160, "");
+		browseListText.screenCenterX();
+		add(browseListText);
+
+		btnContinue = new CitroButton(50, 210, "START EDITOR", 0xFF00CC00, function() {
+			trace("Launching Editor on 3DS...");
+		});
+		btnContinue.active = false;
+		btnContinue.alpha = 0.5;
+		add(btnContinue);
+
+		#else
+		// PC / Mobile Flixel Setup Initialization
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xFF1A1A1A);
 		add(bg);
 		var grid = FlxGridOverlay.create(40, 40, Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), true, 0x11FFFFFF, 0x00FFFFFF);
 		add(grid);
-		
-		var titleString = "Chart Editor Setup";
-		#if haxe3ds
-		titleString = "3DS Chart Editor Setup";
-		#end
 
-		var title = new FlxText(0, 40, FlxG.width, titleString, 32);
+		var title = new FlxText(0, 40, FlxG.width, "Chart Editor Setup", 32);
 		title.setFormat(null, 32, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
 		title.borderSize = 2;
 		add(title);
@@ -79,30 +133,6 @@ class UploadState extends FlxState
 		add(new ModernButton(centerX - 150, startY + (btnGap * 2), "Load Voices (Opponent)", 0xFFFF8844, function() { loadFile("voices_opp"); }));
 		add(new ModernButton(centerX - 150, startY + (btnGap * 3), "Load Psych Chart (.json)", 0xFFFFFF44, function() { loadFile("chart"); }));
 		add(new ModernButton(centerX - 150, startY + (btnGap * 4), "Load Events (Optional)", 0xFFDD44DD, function() { loadFile("events"); }));
-
-		add(new ModernButton(centerX - 150, startY + (btnGap * 5), "Custom Notes (Folder)", 0xFFAA44AA, function() {
-			#if ios
-			customNotePath = lime.system.System.documentsDirectory + "/CustomNotes";
-			if (!FileSystem.exists(customNotePath)) {
-				FileSystem.createDirectory(customNotePath);
-			}
-			statusText.text = "Using App Documents Folder";
-			trace("Custom Note Path: " + customNotePath);
-			#elseif haxe3ds
-			customNotePath = "sdmc:/CustomNotes";
-			if (!FileSystem.exists(customNotePath)) {
-				FileSystem.createDirectory(customNotePath);
-			}
-			statusText.text = "Using 3DS CustomNotes Folder";
-			#else
-			var fileDialog = new FileDialog();
-			fileDialog.onSelect.add(function(path:String) { 
-				customNotePath = path;
-				statusText.text = "Custom Notes Path Set:\n" + path;
-			});
-			fileDialog.browse(FileDialogType.OPEN_DIRECTORY);
-			#end
-		}));
 
 		statusText = new FlxText(0, startY + (btnGap * 6), FlxG.width, "Waiting for Inst...", 16);
 		statusText.alignment = CENTER;
@@ -119,18 +149,18 @@ class UploadState extends FlxState
 		btnContinue.alpha = 0.5;
 		btnContinue.active = false;
 		add(btnContinue);
+		#end
 	}
 
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+	#if haxe3ds
+	override function update(delta:Int) {
+		super.update(delta);
 
-		#if haxe3ds
 		if (HID.keyPressed(HIDKey.START)) {
 			GFX.exit();
 		}
-		#end
+
 		if (isBrowsing) {
-			#if haxe3ds
 			if (HID.keyPressed(HIDKey.DUP) || HID.keyPressed(HIDKey.UP)) {
 				browseIndex--;
 				if (browseIndex < 0) browseIndex = filesList.length - 1;
@@ -147,7 +177,13 @@ class UploadState extends FlxState
 			if (HID.keyPressed(HIDKey.B)) {
 				cancel3DSBrowsing();
 			}
-			#else
+		}
+	}
+	#else
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+
+		if (isBrowsing) {
 			if (FlxG.keys.justPressed.UP) {
 				browseIndex--;
 				if (browseIndex < 0) browseIndex = filesList.length - 1;
@@ -164,9 +200,9 @@ class UploadState extends FlxState
 			if (FlxG.keys.justPressed.ESCAPE) {
 				cancel3DSBrowsing();
 			}
-			#end
 		}
 	}
+	#end
 
 	function loadFile(type:String) {
 		_loadingType = type;
@@ -175,21 +211,14 @@ class UploadState extends FlxState
 		start3DSBrowsing(type);
 		#elseif ios
 		var fileDialog = new FileDialog();
-		
-		fileDialog.onOpen.add(function(data:Dynamic) {
-			processFileBytes(data);
-		});
-
-		fileDialog.onSelect.add(function(path:String) {
-			processFilePath(path);
-		});
-
-		fileDialog.onCancel.add(function() {
-			statusText.text = "Selection cancelled.";
-		});
-
-		var filterStr = (type == "chart" || type == "events") ? "json" : "ogg,mp3";
-		fileDialog.open(filterStr, null, "Select " + type);
+		fileDialog.onOpen.add(function(data:Dynamic) { processFileBytes(data); });
+		fileDialog.onSelect.add(function(path:String) { processFilePath(path); });
+		fileDialog.open((type == "chart" || type == "events") ? "json" : "ogg,mp3", null, "Select " + type);
+		#elseif android
+		var fileDialog = new FileDialog();
+		fileDialog.onOpen.add(function(data:Dynamic) { processFileBytes(data); });
+		fileDialog.onSelect.add(function(path:String) { processFilePath(path); });
+		fileDialog.open((type == "chart" || type == "events") ? "json" : "ogg,mp3", null, "Select " + type);
 		#else
 		_fileRef = new FileReference();
 		_fileRef.addEventListener(Event.SELECT, onFileSelect);
@@ -202,9 +231,7 @@ class UploadState extends FlxState
 		#if sys
 		var targetDir = "sdmc:/charts/";
 		if (!FileSystem.exists(targetDir)) {
-			try {
-				FileSystem.createDirectory(targetDir);
-			} catch(e:Dynamic) {}
+			try { FileSystem.createDirectory(targetDir); } catch(e:Dynamic) {}
 			statusText.text = "Created 'sdmc:/charts/'. Put files there!";
 			return;
 		}
@@ -224,7 +251,7 @@ class UploadState extends FlxState
 			browseIndex = 0;
 			updateBrowseDisplay();
 		} else {
-			statusText.text = "No matching files found in sdmc:/charts/";
+			statusText.text = "No files found in sdmc:/charts/";
 			browseListText.text = "";
 		}
 		#end
@@ -232,7 +259,7 @@ class UploadState extends FlxState
 
 	function updateBrowseDisplay() {
 		var fileName = filesList[browseIndex].split("/").pop();
-		browseListText.text = "Browsing " + _loadingType + " (" + (browseIndex + 1) + "/" + filesList.length + "):\n< " + fileName + " >\n[A/Enter to Confirm, B/Esc to Cancel]";
+		browseListText.text = "Browse " + _loadingType + " (" + (browseIndex + 1) + "/" + filesList.length + "):\n< " + fileName + " >";
 		statusText.text = "";
 	}
 
@@ -243,7 +270,11 @@ class UploadState extends FlxState
 			if (_loadingType == "chart" || _loadingType == "events") {
 				assignData(File.getContent(selectedPath));
 			} else {
+				#if haxe3ds
+				assignData(selectedPath);
+				#else
 				assignData(ByteArray.fromBytes(sys.io.File.getBytes(selectedPath)));
+				#end
 			}
 			#end
 		}
@@ -257,7 +288,7 @@ class UploadState extends FlxState
 		statusText.text = "Selection cancelled.";
 	}
 
-	#if !ios
+	#if (!ios && !android && !haxe3ds)
 	function onFileSelect(e:Event) {
 		_fileRef.removeEventListener(Event.SELECT, onFileSelect);
 		_fileRef.addEventListener(Event.COMPLETE, onFileLoaded);
@@ -271,13 +302,12 @@ class UploadState extends FlxState
 	}
 	#end
 
-	#if ios
+	#if (ios || android)
 	function processFileBytes(data:Dynamic) {
 		var bytes:ByteArray = null;
 		if (Std.isOfType(data, haxe.io.Bytes)) {
 			bytes = ByteArray.fromBytes(cast data);
 		}
-		
 		if (bytes != null) {
 			if (_loadingType == "chart" || _loadingType == "events") {
 				assignData(bytes.toString());
@@ -289,11 +319,9 @@ class UploadState extends FlxState
 
 	function processFilePath(path:String) {
 		if (_loadingType == "chart" || _loadingType == "events") {
-			var content = File.getContent(path);
-			assignData(content);
+			assignData(File.getContent(path));
 		} else {
-			var bytes = File.getBytes(path);
-			assignData(ByteArray.fromBytes(bytes));
+			assignData(ByteArray.fromBytes(File.getBytes(path)));
 		}
 	}
 	#end
@@ -303,7 +331,6 @@ class UploadState extends FlxState
 			case "inst":
 				instData = data;
 				statusText.text = "Instrumental Loaded!";
-				statusText.color = FlxColor.CYAN;
 				btnContinue.active = true;
 				btnContinue.alpha = 1;
 			case "voices":
@@ -313,54 +340,11 @@ class UploadState extends FlxState
 				voicesOppData = data;
 				statusText.text = "Opponent Voices Loaded.";
 			case "chart":
-				if (Std.isOfType(data, haxe.io.Bytes))
-					chartData = (cast data : ByteArray).toString();
-				else
-					chartData = Std.string(data);
+				chartData = Std.string(data);
 				statusText.text = "Chart Data Loaded.";
 			case "events":
-				if (Std.isOfType(data, haxe.io.Bytes))
-					eventsData = (cast data : ByteArray).toString();
-				else
-					eventsData = Std.string(data);
+				eventsData = Std.string(data);
 				statusText.text = "Events Data Loaded.";
-		}
-	}
-}
-
-class ModernButton extends flixel.group.FlxSpriteGroup {
-	public var bg:FlxSprite;
-	public var label:FlxText;
-	var onClick:Void->Void;
-	var baseColor:Int;
-
-	public function new(x:Float, y:Float, text:String, color:Int, onClick:Void->Void) {
-		super(x, y);
-		this.onClick = onClick;
-		this.baseColor = color;
-
-		bg = new FlxSprite().makeGraphic(300, 50, 0xFFFFFFFF);
-		bg.color = color;
-		bg.alpha = 0.8;
-		add(bg);
-		var border = new FlxSprite(0, 0).makeGraphic(300, 4, 0x44000000);
-		border.y = 46;
-		add(border);
-		label = new FlxText(0, 0, 300, text, 16);
-		label.setFormat(null, 16, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
-		label.y = (50 - label.height) / 2;
-		add(label);
-	}
-
-	override function update(elapsed:Float) {
-		super.update(elapsed);
-		if (FlxG.mouse.overlaps(bg)) {
-			bg.alpha = 1;
-			if (FlxG.mouse.justPressed && active) {
-				if (onClick != null) onClick();
-			}
-		} else {
-			bg.alpha = 0.8;
 		}
 	}
 }
