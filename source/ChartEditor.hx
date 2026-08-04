@@ -568,11 +568,18 @@ class ChartEditor extends FlxState
 			ghostNote.y = perfectY;
 			if (col == -1 || col == -2) {
 				ghostNote.frames = null;
+				#if haxe3ds
+				ghostNote.loadGraphic("romfs:/assets/images/eventArrow.png");
+				#else
 				ghostNote.loadGraphic("assets/images/eventArrow.png");
 				if(col == -2) ghostNote.color = 0xFF00FFFF;
 				else ghostNote.color = 0xFFFFFFFF;
 			} else {
+				#if haxe3ds
+				var atlas = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "romfs:/assets/images/NOTE_assets.xml");
+				#else
 				var atlas = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
+				#end
 				ghostNote.frames = atlas;
 				ghostNote.color = 0xFFFFFFFF;
 				ghostNote.animation.addByPrefix('purple', 'arrowLEFT');
@@ -784,16 +791,37 @@ class ChartEditor extends FlxState
 		var songDataStr = Json.stringify(songJson, "\t");
 		var eventsJson = { "song": { "events": savedGlobalEvents } };
 		var eventsDataStr = Json.stringify(eventsJson, "\t");
+
+		#if (haxe3ds || cafe)
+		#if sys
+		try {
+			if (!FileSystem.exists("sdmc:/charts/saves")) {
+				FileSystem.createDirectory("sdmc:/charts/saves");
+			}
+			File.saveContent("sdmc:/charts/saves/" + _song.song.toLowerCase() + ".json", songDataStr);
+			trace("Chart saved successfully to SD card!");
+		} catch(e:Dynamic) {
+			trace("Failed to save chart: " + e);
+		}
+		#end
+		#else
 		if (isGlobalEvents) {
 			var fr2 = new FileReference();
 			fr2.save(eventsDataStr, "events.json");
 		} else {
 			var fr = new FileReference();
 			fr.save(songDataStr, _song.song.toLowerCase() + ".json");
-			try {
-				File.saveContent(Sys.getCwd() + 'saves/' + _song.song + '.json', songDataStr);
-			} catch(e:Dynamic) {}
 		}
+		#end
+		
+		#if sys
+		try {
+			if (!FileSystem.exists(Sys.getCwd() + 'saves/')) {
+				FileSystem.createDirectory(Sys.getCwd() + 'saves/');
+			}
+			File.saveContent(Sys.getCwd() + 'saves/' + _song.song + '.json', songDataStr);
+		} catch(e:Dynamic) {}
+		#end
 	}
 
 	function parsePsychChart(jsonString:String, ?eventsString:String) {
