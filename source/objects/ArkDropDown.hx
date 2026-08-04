@@ -11,7 +11,7 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 #else
 import citro.backend.CitroColor;
 import citro.object.CitroObject;
-import citro.state.CitroCamera;
+import citro.object.CitroCamera;
 #end
 
 class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
