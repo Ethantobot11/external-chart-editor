@@ -1,31 +1,46 @@
 package;
 
+#if haxe3ds
+import citro.state.CitroSubState;
+import citro.object.CitroText;
+import citro.object.CitroSprite;
+typedef BaseFixedSubState = CitroSubState;
+#else
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+typedef BaseFixedSubState = FlxFixedSubState;
+#end
 
 #if haxe3ds
 import haxe3ds.services.HID;
-#end
-
-#if haxe3ds
 @:cppFileCode('#include <3ds.h>')
 #end
 
-class EventEditorSubState extends FlxFixedSubState {
+class EventEditorSubState extends BaseFixedSubState {
 	var note:EditorNoteData;
 	var onSave:Void->Void;
+	
+	#if haxe3ds
+	var typingText:CitroText = null;
+	var box:CitroSprite;
+	var uiGroup:Array<Dynamic> = [];
+	#else
 	var typingText:FlxText = null;
-	var typingVar:String = '';
 	var box:FlxSprite;
-	var uiGroup:FlxTypedGroup<FlxSprite>; 
+	var uiGroup:FlxTypedGroup<FlxSprite>;
+	#end
+
+	var typingVar:String = '';
 
 	public function new(n:EditorNoteData, onSave:Void->Void) {
 		super();
+		#if !haxe3ds
 		if (FlxG.cameras.list.length > 0)
 			camera = FlxG.cameras.list[FlxG.cameras.list.length - 1];
+		#end
 		this.note = n;
 		this.onSave = onSave;
 	}
@@ -41,9 +56,34 @@ class EventEditorSubState extends FlxFixedSubState {
 		}
 		#end
 
+		#if !haxe3ds
 		if (FlxG.cameras.list.length > 0)
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		#end
 
+		#if haxe3ds
+		var bg = new CitroSprite(0, 0);
+		bg.makeGraphic(400, 240, 0xAA000000);
+		add(bg);
+
+		box = new CitroSprite(0, 0);
+		box.makeGraphic(340, 200, 0xFF333333);
+		box.screenCenter();
+		add(box);
+
+		var title = new CitroText(box.x, box.y + 5, "Edit Event");
+		title.screenCenterX();
+		add(title);
+
+		createOptions();
+
+		var xBtn = new CitroButton(box.x + 310, box.y + 5, "X", 0xFFFF4444, function() {
+			onSave();
+			close();
+		});
+		add(xBtn);
+
+		#else
 		var bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, 0xAA000000);
 		add(bg);
 
@@ -67,13 +107,19 @@ class EventEditorSubState extends FlxFixedSubState {
 			close();
 		});
 		add(xBtn);
+		#end
 	}
 
 	function createOptions() {
+		#if haxe3ds
+		// 3DS manual clearing or handling for array UI group
+		#else
 		uiGroup.clear();
-		addOptionString(box.x + 20, box.y + 50, "Event Name:", 'noteType');
-		addOptionString(box.x + 20, box.y + 110, "Value 1:", 'eventVal1');
-		addOptionString(box.x + 20, box.y + 170, "Value 2:", 'eventVal2');
+		#end
+
+		addOptionString(box.x + 20, box.y + (#if haxe3ds 30 #else 50 #end), "Event Name:", 'noteType');
+		addOptionString(box.x + 20, box.y + (#if haxe3ds 75 #else 110 #end), "Value 1:", 'eventVal1');
+		addOptionString(box.x + 20, box.y + (#if haxe3ds 120 #else 170 #end), "Value 2:", 'eventVal2');
 	}
 
 	override function close() {
@@ -89,6 +135,19 @@ class EventEditorSubState extends FlxFixedSubState {
 	}
 	
 	function addOptionString(x:Float, y:Float, label:String, varName:String) {
+		#if haxe3ds
+		var lbl = new CitroText(x, y + 2, label);
+		add(lbl);
+
+		var currentVal = Std.string(Reflect.getProperty(note, varName));
+		if (currentVal == null) currentVal = '';
+		var btn = new CitroButton(x + 100, y, currentVal, 0xFF555555, function() {
+			typingText = btn.label;
+			typingVar = varName;
+			typingText.text = "";
+		});
+		add(btn);
+		#else
 		var lbl = new FlxText(x, y + 5, 200, label, 16); 
 		uiGroup.add(lbl);
 
@@ -99,7 +158,7 @@ class EventEditorSubState extends FlxFixedSubState {
 		btn.onClick = function() {
 			if(typingText != null) return;
 			
-			#if (!haxe3ds && !cafe)
+			#if (!cafe)
 			if (FlxG.stage != null && FlxG.stage.window != null)
 			{
 				FlxG.stage.window.textInputEnabled = true;
@@ -111,12 +170,13 @@ class EventEditorSubState extends FlxFixedSubState {
 			typingText.text = "";
 		};
 		uiGroup.add(btn);
+		#end
 	}
 
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+	#if haxe3ds
+	override function update(delta:Int) {
+		super.update(delta);
 
-		#if haxe3ds
 		if (typingText != null) {
 			if (HID.keyPressed(HIDKey.START) || HID.keyPressed(HIDKey.B)) {
 				Reflect.setProperty(note, typingVar, typingText.text);
@@ -128,8 +188,12 @@ class EventEditorSubState extends FlxFixedSubState {
 				typingText.text = "";
 			}
 		}
-		#end
 	}
+	#else
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+	}
+	#end
 
 	function onTextInput(text:String):Void {
 		if (typingText != null) {
@@ -143,7 +207,7 @@ class EventEditorSubState extends FlxFixedSubState {
 				Reflect.setProperty(note, typingVar, typingText.text);
 				typingVar = '';
 				typingText = null;
-				#if (!haxe3ds && !cafe)
+				#if (!cafe)
 				if (FlxG.stage != null && FlxG.stage.window != null)
 				{
 					FlxG.stage.window.textInputEnabled = false;
