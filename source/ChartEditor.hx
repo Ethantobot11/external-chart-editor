@@ -101,6 +101,8 @@ class ChartEditor extends FlxState
 		super.create();
 		#if mobile
 		uiScale = 1.4;
+		#elseif haxe3ds
+		uiScale = 2;
 		#else
 		uiScale = 1.0;
 		#end
@@ -373,7 +375,7 @@ class ChartEditor extends FlxState
 		for (line in strumLines) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 		for (line in eventStrums) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 
-		#if FLX_TOUCH
+		#if (FLX_TOUCH || haxe3ds)
 		handleTouchInput(elapsed);
 		#end
 		
@@ -439,7 +441,7 @@ class ChartEditor extends FlxState
 	}
 
 
-	#if FLX_TOUCH
+	#if (FLX_TOUCH || haxe3ds)
 	function handleTouchInput(elapsed:Float) {
 		if (isPlaying || isDraggingBar) return;
 		if (btnNoteType.isOpen) {
