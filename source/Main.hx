@@ -24,12 +24,14 @@ import haxe3ds.services.APT;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
 import haxe3ds.services.RomFS;
+import haxe3ds.services.News;
 #end
 
 #if haxe3ds
 @:headerInclude("3ds.h")
 #end
-class Main #if (!haxe3ds) extends Sprite #end
+class Main 
+#if (!haxe3ds) extends Sprite #end
 {
 	#if (!haxe3ds)
 	public var fpsVar:FPSCounter;
@@ -49,20 +51,49 @@ class Main #if (!haxe3ds) extends Sprite #end
 		#if haxe3ds
 		RomFS.init();
 		GFX.init();
-		Console.init(BOTTOM);
+		News.init();
+		Console.init(TOP);
+
+		Sys.println("1. Services initialized.");
+
+		var statusSuccess = true;
+
 		try {
 			if (!sys.FileSystem.exists("sdmc:/Chart-Editor/Logs")) {
 				sys.FileSystem.createDirectory("sdmc:/Chart-Editor/Logs");
+				Sys.println("2. Created directory: sdmc:/Chart-Editor/Logs");
+			} else {
+				Sys.println("2. Log directory already exists.");
 			}
-		} catch(e:Dynamic) {}
-		
-		Sys.println("Boot test successful!");
+		} catch(e:Dynamic) {
+			Sys.println("2. Warning/Error creating dir: " + e);
+			statusSuccess = false;
+			try {
+				News.flashLEDPattern(NewsLampPattern.FRIEND_ONLINE);
+			} catch(err:Dynamic) {}
+		}
+
+		if (statusSuccess) {
+			Sys.println("3. Boot test successful!");
+			try {
+				News.flashLEDPattern(NewsLampPattern.CEC);
+			} catch(err:Dynamic) {}
+		} else {
+			Sys.println("3. Boot completed with warnings.");
+			try {
+				News.flashLEDPattern(NewsLampPattern.BOSS);
+			} catch(err:Dynamic) {}
+		}
+
+		Sys.println("Press [START] to exit application.");
+
 		while (APT.mainLoop()) {
 			if (HID.keyPressed(HIDKey.START)) {
 				break;
 			}
 		}
-		
+
+		News.exit();
 		GFX.exit();
 		#else
 		Lib.current.addChild(new Main());
