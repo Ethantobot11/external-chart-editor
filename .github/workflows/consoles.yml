@@ -131,6 +131,10 @@ jobs:
           haxe compile.hxml
           cd ../../../../
 
+      - name: Install Python Dependencies
+        if: inputs.name == 'Nintendo 3DS'
+        run: pip install Pillow
+
       - name: Convert Images, XMLs & Audio Files
         if: inputs.name == 'Nintendo 3DS'
         run: |
