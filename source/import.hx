@@ -10,6 +10,7 @@ import ChartEditorHelpers.EditorNote;
 import ChartEditorHelpers.EditorStrum;
 
 //Flixel
+#if !haxe3ds
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -31,7 +32,8 @@ import flixel.addons.ui.FlxUIInputText;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.FlxBasic;
-
+#end
+  
 #if sys
 import sys.FileSystem;
 import sys.io.File;
