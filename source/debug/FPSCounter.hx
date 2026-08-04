@@ -15,7 +15,7 @@ import lime.system.System as LimeSystem;
 @:cppFileCode('#include <windows.h>')
 #elseif (ios || mac)
 @:cppFileCode('#include <mach-o/arch.h>')
-#elseif (!nx)
+#elseif (linux || !haxe3ds)
 @:headerInclude('sys/utsname.h')
 #end
 #end
@@ -124,6 +124,10 @@ class FPSCounter extends TextField
 	#elseif nx
 	@:functionCode('
 		return ::String("ARMv6K");
+	')
+	#elseif haxe3ds
+	@:functionCode('
+		return ::String("ARM11");
 	')
 	#else
 	@:functionCode('
