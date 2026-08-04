@@ -22,10 +22,16 @@ class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
 	
 	public var onClick:Void->Void;
 	public var isHovered:Bool = false;
-	
+
+	#if haxe3ds
 	public var baseColor:CitroColor = 0xFF444444;
 	public var hoverColor:CitroColor = 0xFF666666;
 	public var clickColor:CitroColor = 0xFF222222;
+	#else
+	public var baseColor:FlxColor = 0xFF444444;
+	public var hoverColor:FlxColor = 0xFF666666;
+	public var clickColor:FlxColor = 0xFF222222;
+	#end
 	
 	#if !haxe3ds
 	var _camera:FlxCamera;
