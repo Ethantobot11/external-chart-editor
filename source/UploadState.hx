@@ -129,12 +129,12 @@ class UploadState extends FlxState
 		#end
 		if (isBrowsing) {
 			#if haxe3ds
-			if (HID.keyPressed(HIDKey.DUP) || HID.keyPressed(HIDKey.L_UP)) {
+			if (HID.keyPressed(HIDKey.DUP) || HID.keyPressed(HIDKey.UP)) {
 				browseIndex--;
 				if (browseIndex < 0) browseIndex = filesList.length - 1;
 				updateBrowseDisplay();
 			}
-			if (HID.keyPressed(HIDKey.DDOWN) || HID.keyPressed(HIDKey.L_DOWN)) {
+			if (HID.keyPressed(HIDKey.DDOWN) || HID.keyPressed(HIDKey.DOWN)) {
 				browseIndex++;
 				if (browseIndex >= filesList.length) browseIndex = 0;
 				updateBrowseDisplay();
