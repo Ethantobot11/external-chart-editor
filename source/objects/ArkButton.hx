@@ -12,7 +12,7 @@ import citro.backend.CitroColor;
 import citro.object.CitroObject;
 import citro.object.CitroSprite;
 import citro.object.CitroText;
-import citro.state.CitroCamera;
+import citro.object.CitroCamera;
 #end
 
 class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
