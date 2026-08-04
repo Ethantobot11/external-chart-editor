@@ -45,11 +45,19 @@ class EditorStrum extends FlxSprite {
 		this.isEventStrum = isEvent;
 
 		if (isEventStrum) {
+			#if haxe3ds
+			loadGraphic("romfs:/assets/images/eventArrow.png");
+			#else
 			loadGraphic("assets/images/eventArrow.png");
+			#end
 			setGraphicSize(gridSize, gridSize);
 			updateHitbox();
 		} else {
+			#if !haxe3ds
 			var atlas = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
+			#else
+			var atlas = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
+			#end
 			frames = atlas;
 			antialiasing = true;
 			switch (colIdx % 4) {
