@@ -4,6 +4,7 @@ package;
 import android.content.Context;
 #end
 
+import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
 import flixel.FlxState;
@@ -18,7 +19,6 @@ import debug.FPSCounter;
 
 #if haxe3ds
 import haxe3ds.Console;
-
 import haxe3ds.services.APT;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
@@ -36,7 +36,6 @@ class Main extends Sprite
 		startFullscreen: false // if the game should start at fullscreen mode
 	};
 
-	// You can pretty much ignore everything from here on - your code should go in your states.
 	public static function main():Void
 	{
 		#if haxe3ds
@@ -50,12 +49,14 @@ class Main extends Sprite
 	{
 		super();
 		CrashHandler.init();
+		
 		#if android
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(android.content.Context.getExternalFilesDir()));
 		#elseif ios
 		Sys.setCwd(lime.system.System.documentsDirectory);
 		#end
-		//Sets tbe default font ;)
+
+		// Sets the default font ;)
 		FlxAssets.FONT_DEFAULT = FlxAssets.FONT_DEBUGGER = AssetPaths.vcr__ttf;
 		FlxSprite.defaultAntialiasing = true;
 
@@ -72,25 +73,21 @@ class Main extends Sprite
 			if(fpsVar != null)
 				fpsVar.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height));
 
-		     if (FlxG.cameras != null) {
-			   for (cam in FlxG.cameras.list) {
-				if (cam != null && cam.filters != null)
-					resetSpriteCache(cam.flashSprite);
-			   }
+			if (FlxG.cameras != null) {
+				for (cam in FlxG.cameras.list) {
+					if (cam != null && cam.filters != null)
+						resetSpriteCache(cam.flashSprite);
+				}
 			}
 
 			if (FlxG.game != null)
-			resetSpriteCache(FlxG.game);
+				resetSpriteCache(FlxG.game);
 		});
-
-		//#if haxe3ds
-		//GFX.exit();
-		//#end
 	}
 
 	static function resetSpriteCache(sprite:Sprite):Void {
 		@:privateAccess {
-		        sprite.__cacheBitmap = null;
+			sprite.__cacheBitmap = null;
 			sprite.__cacheBitmapData = null;
 		}
 	}
