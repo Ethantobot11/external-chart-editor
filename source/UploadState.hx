@@ -1,11 +1,19 @@
 package;
 
 #if haxe3ds
+import haxe3ds.services.HID;
+import haxe3ds.services.GFX;
 import citro.state.CitroState;
 import citro.object.CitroText;
 import citro.object.CitroSprite;
 typedef BaseState = CitroState;
 #else
+import openfl.utils.ByteArray;
+import openfl.net.FileReference;
+import openfl.events.Event;
+import openfl.net.FileFilter;
+import lime.ui.FileDialog;
+import lime.ui.FileDialogType;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.text.FlxText;
@@ -16,27 +24,14 @@ import flixel.addons.display.FlxGridOverlay;
 typedef BaseState = FlxState;
 #end
 
-#if !haxe3ds
-import openfl.utils.ByteArray;
-import openfl.net.FileReference;
-import openfl.events.Event;
-import openfl.net.FileFilter;
-import lime.ui.FileDialog;
-import lime.ui.FileDialogType;
-#end
-
 #if sys
 import sys.io.File;
 import sys.FileSystem;
 #end
 
 #if haxe3ds
-import haxe3ds.services.HID;
-import haxe3ds.services.GFX;
-import citro.state.CitroState;
 @:headerInclude("3ds.h")
 #end
-
 class UploadState extends BaseState
 {
 	// Data Containers
