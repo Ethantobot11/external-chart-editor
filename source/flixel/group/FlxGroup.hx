@@ -1,5 +1,6 @@
 package flixel.group;
 
+#if !haxe3ds
 import flixel.FlxBasic;
 import flixel.FlxG;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
@@ -1888,4 +1889,5 @@ class FlxTypedGroupIterator<T>
 		return _cursor < _length;
 	}
 }
+#end
 #end
