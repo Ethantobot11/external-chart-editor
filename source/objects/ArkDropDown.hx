@@ -108,15 +108,15 @@ class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
 		}
 	}
 
-	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
-		super.update(delta);
-		headerBtn.update(delta);
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+		headerBtn.update(elapsed);
 		if(isOpen) {
 			#if !haxe3ds
 			bgOptions.update(elapsed);
 			#else
 			for (btn in bgOptions) {
-				btn.update(delta);
+				btn.update(elapsed);
 			}
 			#end
 		}
