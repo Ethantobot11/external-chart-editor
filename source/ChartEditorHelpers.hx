@@ -1,5 +1,9 @@
 package;
 
+#if haxe3ds
+import citro.object.CitroSprite;
+#end
+
 typedef SongData = {
 	var song:String;
 	var bpm:Float;
@@ -35,7 +39,7 @@ class EditorNoteData {
 	}
 }
 
-class EditorStrum extends FlxSprite {
+class EditorStrum extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 	public var resetTimer:Float = 0;
 	public var colIdx:Int = 0;
 	public var isEventStrum:Bool = false;
@@ -101,7 +105,7 @@ class EditorStrum extends FlxSprite {
 	}
 }
 
-class EditorNote extends FlxSprite {
+class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 	public var data:EditorNoteData;
 	public var sustainPiece:FlxSprite;
 	public var sustainEnd:FlxSprite;
