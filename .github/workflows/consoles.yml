@@ -98,13 +98,12 @@ jobs:
             make install
             cd ..
             rm -rf libcwav
-            git clone https://github.com/PabloMK7/cwavtool.git
-            cd cwavtool
-            make
-            cp cwavtool /opt/devkitpro/tools/bin/
-            cd ..
-            rm -rf cwavtool
             mkdir -p /opt/devkitpro/tools/bin
+            wget -q https://github.com/PabloMK7/cwavtool/releases/download/1.0.0/cwavtool.zip -O cwavtool.zip
+            unzip -q cwavtool.zip -d cwavtool_extracted
+            find cwavtool_extracted -type f \( -name "cwavtool" -o -name "cwavtool_linux" \) -exec cp {} /opt/devkitpro/tools/bin/cwavtool \;
+            chmod +x /opt/devkitpro/tools/bin/cwavtool
+            rm -rf cwavtool.zip cwavtool_extracted
             wget -q https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip -O bannertool.zip
             unzip -q bannertool.zip -d bannertool_extracted
             find bannertool_extracted -type f -name "bannertool" -exec cp {} /opt/devkitpro/tools/bin/ \;
