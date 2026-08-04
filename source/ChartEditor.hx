@@ -131,8 +131,13 @@ class ChartEditor extends FlxState
 		loadCustomPsychNoteTypes();
 		calculateStepMs();
 
+		#if nx
+		noteFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "romfs:/assets/images/NOTE_assets.xml");
+		hurtFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/HURTNOTE_assets.png", "romfs:/assets/images/HURTNOTE_assets.xml");
+		#else
 		noteFrames = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
 		hurtFrames = FlxAtlasFrames.fromSparrow("assets/images/HURTNOTE_assets.png", "assets/images/HURTNOTE_assets.xml");
+		#end
 
 		bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, 0xFF111111);
 		bg.scrollFactor.set(0, 0);
