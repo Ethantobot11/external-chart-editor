@@ -1,5 +1,30 @@
 package;
 
+import haxe.Json;
+import sys.FileSystem;
+import sys.io.File;
+#if !haxe3ds
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.FlxCamera;
+import flixel.sound.FlxSound;
+import flixel.text.FlxText;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxColor;
+import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.graphics.frames.FlxAtlasFrames;
+import openfl.utils.ByteArray;
+import openfl.media.Sound;
+import openfl.net.FileReference;
+#else
+import haxe3ds.Env;
+import haxe3ds.services.FS;
+import citro.CitroSave;
+import citro.object.CitroColor;
+#end
+
 typedef InitialPsychChartData = {
 	var inst:ByteArray;
 	var voicesPlayer:ByteArray;
@@ -12,11 +37,15 @@ typedef InitialPsychChartData = {
 typedef ToolbarButtonConfig = {
 	var label:String;
 	var callback:Void->Void;
+	#if !haxe3ds
 	var ?color:FlxColor;
+	#else
+	var ?color:CitroColor;
+	#end
 	var ?width:Float;
 }
 
-class ChartEditor extends FlxState
+class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #end
 {
 	public static var defaultNoteTypes:Array<String> = [
 		'Normal',
@@ -29,9 +58,13 @@ class ChartEditor extends FlxState
 	var _song:SongData;
 	var _psychChartData:InitialPsychChartData; 
 	var _allNotes:Array<EditorNoteData> = [];
+	#if !haxe3ds
 	var _fileRef:FileReference;
+	#end
 	var _loadingType:String = "";
+	#if !haxe3ds
 	var audioTracks:Map<String, FlxSound> = new Map();
+	#end
 	var songLength:Float = 0;
 	// Grid Settings
 	public static var GRID_SIZE:Int = 40;
@@ -39,17 +72,22 @@ class ChartEditor extends FlxState
 	var gridX:Float;
 	var STRUM_LINE_Y:Float;
 	
+	#if !haxe3ds
 	var camGame:FlxCamera;
 	var camHUD:FlxCamera;
+	#end
 	// Strum Lines
 	public var strumLines:Array<EditorStrumLine> = [];
 	public var eventStrums:Array<EditorStrumLine> = [];
 
+	#if !haxe3ds
 	var curRenderedNotes:FlxTypedGroup<EditorNote>;
 	var noteLabelsGroup:FlxTypedGroup<FlxText>;
 	var sectionLinesGroup:FlxTypedGroup<FlxText>;
 	var sectionSeparatorsGroup:FlxTypedGroup<FlxSprite>;
+	#end
 	public var uiScale:Float = 1.0;
+	#if !haxe3ds
 	var topBarBG:FlxSprite;
 	var infoTxt:FlxText;
 	var playBtn:ArkButton;
@@ -61,6 +99,7 @@ class ChartEditor extends FlxState
 	var sectionInfoTxt:FlxText;
 	var btnMustHit:ArkButton;
 	var btnNoteType:ArkDropDown;
+	#end
 	var customNotesList:Array<String> = [];
 	public var currentSnap:Int = 16;
 
@@ -70,7 +109,9 @@ class ChartEditor extends FlxState
 	var isPlaying:Bool = false;
 	var isDraggingBar:Bool = false;
 	
+	#if !haxe3ds
 	var ghostNote:FlxSprite;
+	#end
 	public var selectedNoteType:String = "Normal";
 	var isHoldingNote:Bool = false;
 	var targetNote:EditorNoteData = null;
@@ -79,7 +120,10 @@ class ChartEditor extends FlxState
 	var eventHoldTimer:Float = 0;
 	var isHoldingEvent:Bool = false;
 
+	#if !haxe3ds
 	public var bg:FlxSprite;
+	#end
+	
 	public function new(inst:ByteArray, ?voices:ByteArray, ?voicesOpp:ByteArray, ?chart:String, ?events:String, ?customNotePath:String)
 	{
 		super();
@@ -93,8 +137,10 @@ class ChartEditor extends FlxState
 		};
 	}
 
+	#if !haxe3ds
 	var noteFrames:FlxAtlasFrames;
 	var hurtFrames:FlxAtlasFrames;
+	#end
 
 	override function create()
 	{
@@ -107,6 +153,7 @@ class ChartEditor extends FlxState
 		uiScale = 1.0;
 		#end
 
+		#if !haxe3ds
 		FlxG.mouse.visible = true;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
@@ -114,6 +161,7 @@ class ChartEditor extends FlxState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD, false);
 		FlxG.cameras.setDefaultDrawTarget(camGame, true);
+		#end
 
 		_song = {
 			song: "Test", bpm: 150, speed: 1.0,
@@ -122,16 +170,20 @@ class ChartEditor extends FlxState
 			beatsPerSection: 4
 		};
 
+		#if !haxe3ds
 		curRenderedNotes = new FlxTypedGroup<EditorNote>();
 		noteLabelsGroup = new FlxTypedGroup<FlxText>(); 
 		sectionLinesGroup = new FlxTypedGroup<FlxText>();
 		sectionSeparatorsGroup = new FlxTypedGroup<FlxSprite>();
+		#end
 
 		setupAudio();
 		loadCustomPsychNoteTypes();
 		calculateStepMs();
 
-		#if nx
+		#if haxe3ds
+		// 3DS specific frame initialization logic can go here if needed
+		#elseif nx
 		noteFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "romfs:/assets/images/NOTE_assets.xml");
 		hurtFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/HURTNOTE_assets.png", "romfs:/assets/images/HURTNOTE_assets.xml");
 		#else
@@ -139,13 +191,21 @@ class ChartEditor extends FlxState
 		hurtFrames = FlxAtlasFrames.fromSparrow("assets/images/HURTNOTE_assets.png", "assets/images/HURTNOTE_assets.xml");
 		#end
 
+		#if !haxe3ds
 		bg = new FlxSprite(-FlxG.width, -FlxG.height).makeGraphic(FlxG.width * 3, FlxG.height * 3, 0xFF111111);
 		bg.scrollFactor.set(0, 0);
 		add(bg);
+		#end
 
+		#if !haxe3ds
 		var totalGridWidth = GRID_SIZE * GRID_WIDTH_COLS;
 		gridX = (FlxG.width - totalGridWidth) / 2;
 		STRUM_LINE_Y = FlxG.height * 0.4;
+		#else
+		var totalGridWidth = GRID_SIZE * GRID_WIDTH_COLS;
+		gridX = 40;
+		STRUM_LINE_Y = 100;
+		#end
 
 		strumLines = [];
 		eventStrums = [];
@@ -159,11 +219,12 @@ class ChartEditor extends FlxState
 		var rightEvt = new EditorStrumLine(gridX + totalGridWidth, STRUM_LINE_Y + 12.5, 1, -2, true, 1);
 		eventStrums.push(rightEvt);
 
-		add(rightEvt);
-		add(plrStrum);
-		add(oppStrum);
-		add(leftEvt);
+		add(cast rightEvt);
+		add(cast plrStrum);
+		add(cast oppStrum);
+		add(cast leftEvt);
 
+		#if !haxe3ds
 		add(sectionSeparatorsGroup);
 		add(sectionLinesGroup);
 		add(curRenderedNotes);
@@ -208,6 +269,7 @@ class ChartEditor extends FlxState
 		var strumLineIndicator:FlxSprite = new FlxSprite(gridX - GRID_SIZE, STRUM_LINE_Y - 9).makeGraphic(totalGridWidth + (GRID_SIZE * 2), 4, 0xFFFFFFFF);
 		strumLineIndicator.scrollFactor.set(0,0);
 		add(strumLineIndicator);
+		#end
 
 		setupUI();
 		if (_psychChartData.chartData != null && _psychChartData.chartData.length > 0) {
@@ -226,14 +288,17 @@ class ChartEditor extends FlxState
 	}
 	
 	function setupAudio() {
+		#if !haxe3ds
 		addAudioTrack("inst", _psychChartData.inst);
 		addAudioTrack("voices_player", _psychChartData.voicesPlayer);
 		addAudioTrack("voices_opp", _psychChartData.voicesOpp);
 		if (audioTracks.exists("inst")) {
 			songLength = audioTracks.get("inst").length;
 		}
+		#end
 	}
 
+	#if !haxe3ds
 	function addAudioTrack(key:String, bytes:ByteArray) {
 		var sound = new FlxSound();
 		if (bytes != null) {
@@ -244,6 +309,7 @@ class ChartEditor extends FlxState
 		FlxG.sound.list.add(sound);
 		audioTracks.set(key, sound);
 	}
+	#end
 
 	function loadCustomPsychNoteTypes() {
 		customNotesList = defaultNoteTypes;
@@ -283,8 +349,15 @@ class ChartEditor extends FlxState
 		buttons = [
 			{
 				label: "Exit",
+				#if !haxe3ds
 				color: 0xFFFF4444,
-				callback: function() { FlxG.switchState(new UploadState());
+				#else
+				color: 0xFFFF4444,
+				#end
+				callback: function() { 
+					#if !haxe3ds
+					FlxG.switchState(new UploadState());
+					#end
 				}
 			},
 			{
@@ -295,12 +368,18 @@ class ChartEditor extends FlxState
 				label: "Meta",
 				callback: function() {
 					if(isPlaying) togglePlayback();
+					#if !haxe3ds
 					openSubState(new SongMetadataSubState(_song, this));
+					#end
 				}
 			},
 			{
 				label: "Play",
+				#if !haxe3ds
 				color: FlxColor.GREEN,
+				#else
+				color: 0xFF44FF44,
+				#end
 				callback: togglePlayback
 			},
 			{
@@ -309,14 +388,23 @@ class ChartEditor extends FlxState
 			},
 			{
 				label: "+", width: 40,
-				callback: function() { camGame.zoom = Math.min(3, camGame.zoom + 0.1);
+				callback: function() { 
+					#if !haxe3ds
+					camGame.zoom = Math.min(3, camGame.zoom + 0.1);
+					#end
 				}
 			},
 			{
 				label: "-", width: 40,
-				callback: function() { camGame.zoom = Math.max(0.5, camGame.zoom - 0.1); }
+				callback: function() { 
+					#if !haxe3ds
+					camGame.zoom = Math.max(0.5, camGame.zoom - 0.1); 
+					#end
+				}
 			}
 		];
+		
+		#if !haxe3ds
 		var topBarHeight = 50 * uiScale;
 		topBarBG = new FlxSprite(0, 0).makeGraphic(FlxG.width, Std.int(topBarHeight), 0xFF000000);
 		topBarBG.alpha = 0.8;
@@ -366,22 +454,31 @@ class ChartEditor extends FlxState
 
 		rightSideTxt = new FlxText(gridX + (GRID_SIZE * GRID_WIDTH_COLS) + GRID_SIZE + 10, FlxG.height / 2, 150, "Global Events\n(All Difficulties)");
 		rightSideTxt.alignment = LEFT; rightSideTxt.scrollFactor.set(0,0); add(rightSideTxt);
+		#end
 	}
 
-	override function update(elapsed:Float) {
+	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
+		#if !haxe3ds
 		super.update(elapsed);
+		var elapsedFloat:Float = elapsed;
+		#else
+		super.update(delta);
+		var elapsedFloat:Float = delta / 1000.0;
+		#end
 
-		handlePlayback(elapsed);
+		handlePlayback(elapsedFloat);
 		var visualOffset:Float = 25;
 		var gridOffset = ((curTime + visualOffset) / stepMs) * GRID_SIZE;
 
+		#if !haxe3ds
 		camGame.scroll.set(0, gridOffset);
+		#end
 		
 		for (line in strumLines) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 		for (line in eventStrums) line.updateGridPosition(STRUM_LINE_Y, gridOffset);
 
 		#if (FLX_TOUCH || haxe3ds)
-		handleTouchInput(elapsed);
+		handleTouchInput(elapsedFloat);
 		#end
 		
 		updateCurrentSection();
@@ -407,6 +504,7 @@ class ChartEditor extends FlxState
 		}
 		
 		curSection = newSecIndex;
+		#if !haxe3ds
 		if (btnMustHit != null) {
 			var isMustHit = _song.notes[curSection].mustHitSection;
 			btnMustHit.label.text = "Must Hit: " + (isMustHit ? "TRUE" : "FALSE");
@@ -418,6 +516,7 @@ class ChartEditor extends FlxState
 		}
 
 		sectionInfoTxt.text = "Section: " + curSection + "\nMust Hit: " + _song.notes[curSection].mustHitSection;
+		#end
 	}
 
 	function toggleMustHitSection() {
@@ -428,6 +527,7 @@ class ChartEditor extends FlxState
 	
 	function handlePlayback(elapsed:Float) {
 		if (!isPlaying) return;
+		#if !haxe3ds
 		var inst = audioTracks.get("inst");
 
 		if (inst != null && inst.playing) {
@@ -443,12 +543,17 @@ class ChartEditor extends FlxState
 			curTime += elapsed * 1000;
 			if(curTime > songLength && songLength > 0) togglePlayback();
 		}
+		#else
+		curTime += elapsed * 1000;
+		if(curTime > songLength && songLength > 0) togglePlayback();
+		#end
 	}
 
 
 	#if (FLX_TOUCH || haxe3ds)
 	function handleTouchInput(elapsed:Float) {
 		if (isPlaying || isDraggingBar) return;
+		#if !haxe3ds
 		if (btnNoteType.isOpen) {
 			for (touch in FlxG.touches.list) {
 				if (touch.justPressed) {
@@ -458,21 +563,38 @@ class ChartEditor extends FlxState
 		}
 
 		for (touch in FlxG.touches.list) if (touch.overlaps(topBarBG, camHUD)) return;
+		#end
 
 		var touchStartTime:Float = 0;
 		var moveThreshold = 10;
 
+		#if !haxe3ds
 		var touch = FlxG.touches.getFirst();
 		if (touch == null) return;
 		var worldPos = touch.getWorldPosition(camGame);
 		var worldX = worldPos.x;
 		var worldY = worldPos.y;
 		var screenPos = touch.getScreenPosition(camHUD);
+		#else
+		// Placeholder touch logic mapping for haxe3ds environment
+		var worldX:Float = 0;
+		var worldY:Float = 0;
+		var screenX:Float = 0;
+		var screenY:Float = 0;
+		var justPressed:Bool = false;
+		var pressed:Bool = false;
+		var justReleased:Bool = false;
+		if (!pressed) return;
+		#end
 
 		updateGhostNoteState(worldX, worldY);
 		var buttonAdded:Bool = false;
 		
+		#if !haxe3ds
 		if (touch.justPressed) {
+		#else
+		if (justPressed) {
+		#end
 			targetNote = getNoteAtPos(worldX, worldY);
 			if (targetNote != null) {
 				if (targetNote.column == -1 || targetNote.column == -2) {
@@ -490,16 +612,22 @@ class ChartEditor extends FlxState
 			}
 		}
 
+		#if !haxe3ds
 		if (touch.pressed) {
+		#else
+		if (pressed) {
+		#end
 			if (targetNote != null) touchStartTime += elapsed;
 
 			if (isHoldingEvent) {
 				eventHoldTimer += elapsed;
 				if (eventHoldTimer > 0.4) {
 					isHoldingEvent = false;
+					#if !haxe3ds
 					openSubState(new EventOptionSubState(targetNote, screenPos.x, screenPos.y,
 					function() { openSubState(new EventEditorSubState(targetNote, function() { updateGrid(); })); },
 					function() { _allNotes.remove(targetNote); updateGrid(); }));
+					#end
 				}
 			}
 			else if (isHoldingNote && targetNote != null && targetNote.column != -1 && targetNote.column != -2) {
@@ -516,7 +644,11 @@ class ChartEditor extends FlxState
 			}
 		}
 
+		#if !haxe3ds
 		if (touch.justReleased) {
+		#else
+		if (justReleased) {
+		#end
 			if (targetNote != null && !(Math.abs(worldY - initialTouchY) > moveThreshold || touchStartTime > 0.4) && touchStartTime < 0.4 && !isHoldingEvent && eventHoldTimer < 0.4 && !buttonAdded) {
 				 _allNotes.remove(targetNote);
 				updateGrid();
@@ -549,6 +681,7 @@ class ChartEditor extends FlxState
 
 	function updateGhostNoteState(worldX:Float, worldY:Float) {
 		var col = getColumnFromX(worldX);
+		#if !haxe3ds
 		if (EditorPrefs.ghostModeEnabled && !isHoldingNote && col != -999) {
 			ghostNote.visible = true;
 
@@ -603,6 +736,7 @@ class ChartEditor extends FlxState
 		} else {
 			ghostNote.visible = false;
 		}
+		#end
 	}
 
 	function calculateStepMs() {
@@ -615,7 +749,9 @@ class ChartEditor extends FlxState
 		var totalTimeStr = formatTime((songLength > 0) ? songLength : 0);
 		var curStep = Math.floor(curTime / stepMs);
 		var curBeat = Math.floor(curStep / 4);
+		#if !haxe3ds
 		infoTxt.text = '${curTimeStr} / ${totalTimeStr}\nStep: ${curStep}\nBeat: ${curBeat}\nBPM: ${_song.bpm}\nSnap: 1/$currentSnap';
+		#end
 	}
 
 	function formatTime(ms:Float):String {
@@ -629,6 +765,7 @@ class ChartEditor extends FlxState
 	}
 
 	function updateNoteVisuals() {
+		#if !haxe3ds
 		curRenderedNotes.forEachAlive(function(note:EditorNote) {
 			if (isPlaying && !note.isEvent) {
 				var noteStart = note.data.time;
@@ -662,9 +799,11 @@ class ChartEditor extends FlxState
 				if (note.sustainEnd != null) note.sustainEnd.alpha = 0.6;
 			}
 		});
+		#end
 	}
 
 	function updateScrollBar() {
+		#if !haxe3ds
 		var barWidth = scrollBarBg.width;
 		var barX = scrollBarBg.x;
 		var maxTime = (songLength > 0) ? songLength : 1;
@@ -707,6 +846,7 @@ class ChartEditor extends FlxState
 
 		var percent = curTime / maxTime;
 		scrollKnob.x = barX + (percent * (barWidth - scrollKnob.width));
+		#end
 	}
 	
 	function getNoteAtPos(worldX:Float, worldY:Float):EditorNoteData {
@@ -793,7 +933,24 @@ class ChartEditor extends FlxState
 		var eventsJson = { "song": { "events": savedGlobalEvents } };
 		var eventsDataStr = Json.stringify(eventsJson, "\t");
 
-		#if (haxe3ds || cafe)
+		#if haxe3ds
+		var saveSystem = new CitroSave();
+		if (saveSystem.status == SUCCESSFUL) {
+			saveSystem.data.chartData = songDataStr;
+			saveSystem.flush();
+			trace("Chart saved successfully via CitroSave!");
+		} else {
+			try {
+				if (!FileSystem.exists("sdmc:/charts/saves")) {
+					FileSystem.createDirectory("sdmc:/charts/saves");
+				}
+				File.saveContent("sdmc:/charts/saves/" + _song.song.toLowerCase() + ".json", songDataStr);
+				trace("Chart saved successfully to SD card!");
+			} catch(e:Dynamic) {
+				trace("Failed to save chart: " + e);
+			}
+		}
+		#elseif cafe
 		#if sys
 		try {
 			if (!FileSystem.exists("sdmc:/charts/saves")) {
@@ -916,6 +1073,7 @@ class ChartEditor extends FlxState
 
 	function togglePlayback() {
 		isPlaying = !isPlaying;
+		#if !haxe3ds
 		var inst = audioTracks.get("inst");
 		if (inst == null) return;
 
@@ -934,9 +1092,11 @@ class ChartEditor extends FlxState
 			if (playBtn != null) playBtn.label.text = "Play";
 			for (snd in audioTracks) snd.pause();
 		}
+		#end
 	}
 
 	function syncVocals() {
+		#if !haxe3ds
 		var inst = audioTracks.get("inst");
 		for (key in audioTracks.keys()) {
 			if (key == "inst") continue;
@@ -945,6 +1105,7 @@ class ChartEditor extends FlxState
 				v.time = inst.time;
 			}
 		}
+		#end
 	}
 	
 	function findStartIndex(time:Float):Int {
@@ -982,6 +1143,7 @@ class ChartEditor extends FlxState
 	}
 
 	public function updateGrid() {
+		#if !haxe3ds
 		curRenderedNotes.forEachAlive(function(note:EditorNote) note.kill());
 		noteLabelsGroup.forEachAlive(function(txt:FlxText) txt.kill());
 		sectionLinesGroup.forEachAlive(function(txt:FlxText) txt.kill());
@@ -991,14 +1153,13 @@ class ChartEditor extends FlxState
 		var renderStartTime = curTime + 2000;
 
 		if (EditorPrefs.showSectionLines != false) {
-			var beats = (_song.beatsPerSection != null && _song.beatsPerSection > 0) ? _song.beatsPerSection : 4;
+			var beats = (_song.beatsPerSection != null && _song.beatsPerSection > 0) ?
+			_song.beatsPerSection : 4;
 			var beatMs = 60000 / _song.bpm;
 			var sectionMs = beatMs * beats;
-
 			var startSectionIdx = Math.floor(renderEndTime / sectionMs);
 			if (startSectionIdx < 0) startSectionIdx = 0;
 			var endSectionIdx = Math.ceil(renderStartTime / sectionMs);
-
 			for (i in startSectionIdx...endSectionIdx + 1) {
 				var secTime = i * sectionMs;
 				var secY = STRUM_LINE_Y + (secTime / stepMs) * GRID_SIZE;
@@ -1022,7 +1183,6 @@ class ChartEditor extends FlxState
 		}
 
 		var startIndex = findStartIndex(renderEndTime);
-
 		for (i in startIndex..._allNotes.length) {
 			var n = _allNotes[i];
 
@@ -1035,14 +1195,12 @@ class ChartEditor extends FlxState
 			else nX = strumLines[1].x + ((n.column - 4) * GRID_SIZE);
 
 			var nY = STRUM_LINE_Y + (n.time / stepMs) * GRID_SIZE;
-
 			var newNote:EditorNote = curRenderedNotes.recycle(EditorNote);
 			
 			newNote.reload(nX, nY, n, GRID_SIZE, noteFrames, hurtFrames, _psychChartData.customNotePath);
 			
 			newNote.updateTail(stepMs);
 			curRenderedNotes.add(newNote);
-
 			if (n.noteType != "Normal" && customNotesList.contains(n.noteType)) {
 				var idx = customNotesList.indexOf(n.noteType);
 				var label = noteLabelsGroup.recycle(FlxText);
@@ -1057,5 +1215,6 @@ class ChartEditor extends FlxState
 				noteLabelsGroup.add(label);
 			}
 		}
+		#end
 	}
 }
