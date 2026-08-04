@@ -7,13 +7,6 @@
 		},
 		"libraries": [
 			"haxe3ds",
-			"lime",
-			"openfl",
-			"flixel",
-			"flixel-addons",
-			"flixel-ui",
-			"reflaxe",
-			"reflaxe.cpp"
 		],
 		"defines": [],
 		"compileAsCIA": false,
