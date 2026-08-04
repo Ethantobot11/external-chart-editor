@@ -24,6 +24,8 @@ import haxe3ds.services.APT;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
 import haxe3ds.services.RomFS;
+import haxe3ds.services.News;
+import citro.CitroGame;
 #end
 
 #if haxe3ds
@@ -84,16 +86,14 @@ class Main
 			} catch(err:Dynamic) {}
 		}
 
-		Sys.println("Press [START] to exit application.");
+		Sys.println("4. Launching CitroEngine game state...");
 
-		while (APT.mainLoop()) {
-			if (HID.keyPressed(HIDKey.START)) {
-				break;
-			}
-		}
+		// Initialize CitroGame instead of trying to use OpenFL FlxGame on 3DS hardware
+		CitroGame.init(new TestState3DS());
 
-		addChild(new FlxGame(400, 200, TestState3DS, 60, 60, true, false));
-
+		// Clean exit routines after CitroGame finishes loop
+		News.exit();
+		GFX.exit();
 		#else
 		Lib.current.addChild(new Main());
 		#end
@@ -136,11 +136,6 @@ class Main
 			if (FlxG.game != null)
 				resetSpriteCache(FlxG.game);
 		});
-
-		#if haxe3ds
-		News.exit();
-		GFX.exit();
-		#end
 	}
 
 	static function resetSpriteCache(sprite:Sprite):Void {
