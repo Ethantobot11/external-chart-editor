@@ -1,18 +1,46 @@
 package objects;
 
-class ArkDropDown extends FlxSpriteGroup {
+#if !haxe3ds
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.FlxCamera;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
+import flixel.group.FlxSpriteGroup;
+import flixel.group.FlxGroup.FlxTypedGroup;
+#else
+import citro.backend.CitroColor;
+import citro.object.CitroObject;
+import citro.state.CitroCamera;
+#end
+
+class ArkDropDown extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end {
 	public var headerBtn:ArkButton;
 	public var isOpen:Bool = false;
 	
+	#if !haxe3ds
 	var bgOptions:FlxTypedGroup<ArkButton>;
+	var cam:FlxCamera;
+	#else
+	var bgOptions:Array<ArkButton>;
+	var cam:CitroCamera;
+	#end
+
 	var optionLabels:Array<String>;
 	var onSelect:String->Void;
 	var uiScale:Float;
-	var cam:FlxCamera;
 	var _height:Int;
 	var autoClose:Bool;
-	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float, label:String, options:Array<String>, onSelect:String->Void, cam:FlxCamera, autoClose:Bool = true) {
+
+	public function new(x:Float, y:Float, width:Int, height:Int, scale:Float, label:String, options:Array<String>, onSelect:String->Void, #if !haxe3ds cam:FlxCamera #else cam:CitroCamera #end, autoClose:Bool = true) {
+		#if !haxe3ds
 		super(x, y);
+		#else
+		super();
+		this.x = x;
+		this.y = y;
+		#end
+
 		this.width = width;
 		this.height = height;
 		this.uiScale = scale;
@@ -22,10 +50,18 @@ class ArkDropDown extends FlxSpriteGroup {
 		this._height = height;
 		this.autoClose = autoClose;
 
+		#if !haxe3ds
 		bgOptions = new FlxTypedGroup<ArkButton>();
+		#else
+		bgOptions = [];
+		#end
+
 		headerBtn = new ArkButton(0, 0, width, height, scale, label + ": " + (options.length > 0 ? options[0] : "None"), toggleOpen, cam);
 		add(headerBtn);
+		
+		#if !haxe3ds
 		this.cameras = [cam];
+		#end
 	}
 
 	function toggleOpen() {
@@ -34,11 +70,18 @@ class ArkDropDown extends FlxSpriteGroup {
 	}
 
 	function refreshOptions() {
+		#if !haxe3ds
 		for (btn in bgOptions) {
 			remove(btn);
 			btn.destroy();
 		}
 		bgOptions.clear();
+		#else
+		for (btn in bgOptions) {
+			btn.destroy();
+		}
+		bgOptions = [];
+		#end
 
 		if (isOpen) {
 			var currentY = _height;
@@ -50,19 +93,31 @@ class ArkDropDown extends FlxSpriteGroup {
 					headerBtn.label.text = "ꜜ Type: " + opt + " ꜜ";
 					if (autoClose) toggleOpen();
 				}, cam);
-				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
 				
+				#if !haxe3ds
+				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
 				add(btn);
 				bgOptions.add(btn);
+				#else
+				btn.bg.color = (i % 2 == 0) ? 0xFF555555 : 0xFF666666;
+				bgOptions.push(btn);
+				#end
+
 				currentY += _height;
 			}
 		}
 	}
 
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
+		super.update(delta);
 		if(isOpen) {
+			#if !haxe3ds
 			bgOptions.update(elapsed);
+			#else
+			for (btn in bgOptions) {
+				btn.update(delta);
+			}
+			#end
 		}
 	}
 }
