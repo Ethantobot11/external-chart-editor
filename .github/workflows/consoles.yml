@@ -134,11 +134,9 @@ jobs:
       - name: Convert Images, XMLs & Audio Files
         if: inputs.name == 'Nintendo 3DS'
         run: |
-          mkdir -p assets/romfs/haxe3ds
-          touch assets/romfs/haxe3ds/version
+          sudo apt-get update && sudo apt-get install -y ffmpeg
           export PATH=/opt/devkitpro/tools/bin:$PATH
-          chmod +x convert_assets.sh
-          ./convert_assets.sh
+          python3 convert_assets.py
 
       - name: Compile for 3DS via Haxe3DS (Safe Check)
         if: inputs.name == 'Nintendo 3DS'
