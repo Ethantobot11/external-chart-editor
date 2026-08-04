@@ -141,10 +141,9 @@ jobs:
             find assets/ -type f \( -name "*.ogg" -o -name "*.mp3" \) | while read file; do
               dir=$(dirname "$file")
               filename=$(basename "$file")
-              extension="${filename##*.}"
               nameonly="${filename%.*}"
               echo "Converting $file to CWAV..."
-              cwavtool "$file" "${dir}/${nameonly}.cwav"
+              cwavtool -i "$file" -o "${dir}/${nameonly}.cwav"
             done
           fi
 
