@@ -37,6 +37,15 @@ import sys.FileSystem;
 import sys.io.File;
 #end
 
+#if haxe3ds
+import haxe3ds.Console;
+import haxe3ds.services.APT;
+import haxe3ds.services.GFX;
+import haxe3ds.services.HID;
+import haxe3ds.services.RomFS;
+import haxe3ds.services.FS;
+#end
+
 //Lime
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
