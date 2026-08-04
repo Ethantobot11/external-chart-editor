@@ -41,7 +41,7 @@ class Main
 	public static final game = {
 		width: #if haxe3ds 400 #else 1280 #end,
 		height: #if haxe3ds 240 #else 720 #end,
-		initialState: #if !haxe3ds UploadState #else TestState3DS #end,
+		initialState: UploadState,
 		framerate: 60,
 		skipSplash: true,
 		startFullscreen: false
@@ -86,12 +86,10 @@ class Main
 			} catch(err:Dynamic) {}
 		}
 
-		Sys.println("4. Launching CitroEngine game state...");
+		Sys.println("4. Launching CitroEngine game state for 3DS...");
 
-		// Initialize CitroGame instead of trying to use OpenFL FlxGame on 3DS hardware
-		CitroGame.init(new TestState3DS());
+		CitroGame.init(new UploadStateCitro());
 
-		// Clean exit routines after CitroGame finishes loop
 		News.exit();
 		GFX.exit();
 		#else
