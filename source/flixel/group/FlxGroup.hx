@@ -143,13 +143,13 @@ class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 	/**
 	 * Automatically goes through and calls update on everything you added.
 	 */
-	override public function update(elapsed:Float):Void
+	override public function update(#if haxe3ds delta:Int #else elapsed:Float #end):Void
 	{
 		for (basic in members)
 		{
 			if (basic != null && basic.exists && basic.active)
 			{
-				basic.update(elapsed);
+				basic.update(#if !haxe3ds elapsed #else delta #end);
 			}
 		}
 	}
@@ -1073,7 +1073,7 @@ class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 	/**
 	 * Automatically goes through and calls update on everything you added.
 	 */
-	override public function update(elapsed:Float):Void
+	override public function update(#if haxe3ds delta:Int #else elapsed:Float #end):Void
 	{
 		var i:Int = 0;
 		var basic:FlxBasic = null;
@@ -1084,7 +1084,7 @@ class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 
 			if (basic != null && basic.exists && basic.active)
 			{
-				basic.update(elapsed);
+				basic.update(#if !haxe3ds elapsed #else delta #end);
 			}
 		}
 	}

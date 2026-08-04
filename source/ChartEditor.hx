@@ -458,9 +458,9 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 		#end
 	}
 
-	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
+	override function update(#if !haxe3ds #if haxe3ds delta:Int #else elapsed:Float #end #else delta:Int #end) {
 		#if !haxe3ds
-		super.update(elapsed);
+		super.update(#if !haxe3ds elapsed #else delta #end);
 		var elapsedFloat:Float = elapsed;
 		#else
 		super.update(delta);
@@ -526,7 +526,7 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 		}
 	}
 	
-	function handlePlayback(elapsed:Float) {
+	function handlePlayback(#if haxe3ds delta:Int #else elapsed:Float #end) {
 		if (!isPlaying) return;
 		#if !haxe3ds
 		var inst = audioTracks.get("inst");
@@ -552,7 +552,7 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 
 
 	#if (FLX_TOUCH || haxe3ds)
-	function handleTouchInput(elapsed:Float) {
+	function handleTouchInput(#if haxe3ds delta:Int #else elapsed:Float #end) {
 		if (isPlaying || isDraggingBar) return;
 		#if !haxe3ds
 		if (btnNoteType.isOpen) {

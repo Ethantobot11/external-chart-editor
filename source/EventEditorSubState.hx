@@ -190,8 +190,8 @@ class EventEditorSubState extends FixedSubState {
 		}
 	}
 	#else
-	override function update(elapsed:Float) {
-		super.update(elapsed);
+	override function update(#if haxe3ds delta:Int #else elapsed:Float #end) {
+		super.update(#if !haxe3ds elapsed #else delta #end);
 	}
 	#end
 
