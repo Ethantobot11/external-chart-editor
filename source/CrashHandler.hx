@@ -3,17 +3,23 @@ package;
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.ErrorEvent;
 import openfl.errors.Error;
+
+// Conditional imports for FlxG / Desktop vs 3DS environment
+#if haxe3ds
+import haxe3ds.Console;
+#else
 import flixel.FlxG;
+#end
+
 #if sys
 import sys.FileSystem;
 import sys.io.File;
 #end
-#if haxe3ds
-import haxe3ds.Console;
-#end
 
 using StringTools;
+#if !haxe3ds
 using flixel.util.FlxArrayUtil;
+#end
 
 /**
  * Crash Handler adapted for Nintendo 3DS and multiplatform.
