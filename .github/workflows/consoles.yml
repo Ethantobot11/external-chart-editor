@@ -139,14 +139,13 @@ jobs:
           apt-get update && apt-get install -y ffmpeg
           export PATH=/opt/devkitpro/tools/bin:$PATH
           if [ -d "assets" ]; then
-            # Find and convert MP3s to OGG first
             find assets/ -type f -name "*.mp3" | while read file; do
               dir=$(dirname "$file")
               filename=$(basename "$file")
               nameonly="${filename%.*}"
               echo "Converting MP3 $file to OGG..."
-              ffmpeg -i "$file" -q:a 4 "${dir}/${nameonly}.ogg"
-              rm "$file" # Optional: remove the old mp3
+              ffmpeg -y -i "$file" -q:a 4 "${dir}/${nameonly}.ogg"
+              rm "$file"
             done
             find assets/ -type f -name "*.ogg" | while read file; do
               dir=$(dirname "$file")
