@@ -460,7 +460,7 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 
 	override function update(#if !haxe3ds #if haxe3ds delta:Int #else elapsed:Float #end #else delta:Int #end) {
 		#if !haxe3ds
-		super.update(#if !haxe3ds elapsed #else delta #end);
+		super.update(#if !haxe3ds elapsed #end);
 		var elapsedFloat:Float = elapsed;
 		#else
 		super.update(delta);

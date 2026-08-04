@@ -149,7 +149,7 @@ class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 		{
 			if (basic != null && basic.exists && basic.active)
 			{
-				basic.update(#if !haxe3ds elapsed #else delta #end);
+				basic.update(#if !haxe3ds elapsed #end);
 			}
 		}
 	}
@@ -1084,7 +1084,7 @@ class FlxTypedGroup<T:FlxBasic> extends FlxBasic
 
 			if (basic != null && basic.exists && basic.active)
 			{
-				basic.update(#if !haxe3ds elapsed #else delta #end);
+				basic.update(#if !haxe3ds elapsed #end);
 			}
 		}
 	}

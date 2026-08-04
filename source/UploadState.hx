@@ -177,7 +177,7 @@ class UploadState extends BaseState
 	}
 	#else
 	override function update(#if haxe3ds delta:Int #else elapsed:Float #end) {
-		super.update(#if !haxe3ds elapsed #else delta #end);
+		super.update(#if !haxe3ds elapsed #end);
 
 		if (isBrowsing) {
 			if (FlxG.keys.justPressed.UP) {
@@ -345,7 +345,7 @@ class UploadState extends BaseState
 	}
 }
 
-class ModernButton extends #if haxe3ds flixel.group.FlxSpriteGroup #else citro.object.CitroObject #end {
+class ModernButton extends #if !haxe3ds flixel.group.FlxSpriteGroup #else citro.object.CitroObject #end {
 	#if !haxe3ds
 	public var bg:FlxSprite;
 	public var label:FlxText;
@@ -388,7 +388,7 @@ class ModernButton extends #if haxe3ds flixel.group.FlxSpriteGroup #else citro.o
 	}
 
 	override function update(#if haxe3ds delta:Int #else elapsed:Float #end) {
-		super.update(#if !haxe3ds elapsed #else delta #end);
+		super.update(#if !haxe3ds elapsed #end);
 		#if !haxe3ds
 		if (FlxG.mouse.overlaps(bg)) {
 			bg.alpha = 1;

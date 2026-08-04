@@ -168,7 +168,7 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 	}
 
 	override function update(#if haxe3ds delta:Int #else elapsed:Float #end) {
-		super.update(#if !haxe3ds elapsed #else delta #end);
+		super.update(#if !haxe3ds elapsed #end);
 		
 		#if !haxe3ds
 		#if (FLX_TOUCH || haxe3ds || cafe)
@@ -188,12 +188,12 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
 		#end
 		#else
-		box.update(#if !haxe3ds elapsed #else delta #end);
-		border.update(#if !haxe3ds elapsed #else delta #end);
-		titleText.update(#if !haxe3ds elapsed #else delta #end);
-		subText.update(#if !haxe3ds elapsed #else delta #end);
-		btnEdit.update(#if !haxe3ds elapsed #else delta #end);
-		btnDelete.update(#if !haxe3ds elapsed #else delta #end);
+		box.update(#if !haxe3ds elapsed #end);
+		border.update(#if !haxe3ds elapsed #end);
+		titleText.update(#if !haxe3ds elapsed #end);
+		subText.update(#if !haxe3ds elapsed #end);
+		btnEdit.update(#if !haxe3ds elapsed #end);
+		btnDelete.update(#if !haxe3ds elapsed #end);
 		#end
 	}
 }

@@ -120,7 +120,7 @@ class EditorStrum extends #if !haxe3ds FlxSprite #else CitroAnimate #end {
 	}
 
 	override function update(#if haxe3ds delta:Int #else elapsed:Float #end) {
-		super.update(#if !haxe3ds elapsed #else delta #end);
+		super.update(#if !haxe3ds elapsed #end);
 		if (resetTimer > 0) {
 			resetTimer -= elapsed;
 			if (resetTimer <= 0) playAnim('static');
