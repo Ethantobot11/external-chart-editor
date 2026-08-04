@@ -12,6 +12,7 @@ import flixel.tweens.FlxEase;
 #else
 import citro.backend.CitroColor;
 import citro.object.CitroSprite;
+import citro.object.CitroText;
 import citro.state.CitroSubState;
 #end
 
@@ -35,6 +36,10 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 	var bg:CitroSprite;
 	var box:CitroSprite;
 	var border:CitroSprite;
+	var titleText:CitroText;
+	var subText:CitroText;
+	var btnEdit:ArkButton;
+	var btnDelete:ArkButton;
 	#end
 
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
@@ -54,15 +59,15 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 	{
 		super.create();
 
+		var boxWidth = 260;
+		var boxHeight = 180;
+
 		#if !haxe3ds
 		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set(0,0);
 		add(bg);
 		FlxTween.tween(bg, {alpha: 0.4}, 0.2);
-
-		var boxWidth = 260;
-		var boxHeight = 180;
 
 		if (targetX + boxWidth > FlxG.width) targetX = FlxG.width - boxWidth - 10;
 		if (targetX < 0) targetX = 10;
@@ -110,10 +115,33 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 		#else
 		bg = new CitroSprite();
 		box = new CitroSprite();
+		box.x = targetX;
+		box.y = targetY;
+		box.color = 0xFF181818;
+
 		border = new CitroSprite();
-		add(bg);
-		add(border);
-		add(box);
+		border.x = targetX - 2;
+		border.y = targetY - 2;
+		border.color = 0xFF4488FF;
+
+		titleText = new CitroText(targetX, targetY + 15, "EVENT OPTION");
+		titleText.color = 0xFFFFFFFF;
+		titleText.alignment = CENTER;
+		titleText.setBorderStyle(0xFF000000, 1, OUTLINE);
+
+		subText = new CitroText(targetX, targetY + 40, "Selected: " + note.noteType);
+		subText.color = 0xFFAAAAAA;
+		subText.alignment = CENTER;
+
+		btnEdit = new ArkButton(targetX + (boxWidth/2) - 70, targetY + 70, 140, 30, 1, "Edit Event", function() {
+			closeAnim(function() { if(onEdit != null) onEdit(); });
+		});
+		btnEdit.setBaseColor(0xFF4488FF);
+
+		btnDelete = new ArkButton(targetX + (boxWidth/2) - 70, targetY + 115, 140, 30, 1, "Delete Event", function() {
+			closeAnim(function() { if(onDelete != null) onDelete(); });
+		});
+		btnDelete.setBaseColor(0xFFFF4444);
 		#end
 	}
 
@@ -160,6 +188,12 @@ class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubSt
 		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
 		#end
 		#else
+		box.update(delta);
+		border.update(delta);
+		titleText.update(delta);
+		subText.update(delta);
+		btnEdit.update(delta);
+		btnDelete.update(delta);
 		#end
 	}
 }
