@@ -22,6 +22,8 @@ import haxe3ds.Console;
 import haxe3ds.services.APT;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
+import haxe3ds.services.RomFS;
+import haxe3ds.services.FS;
 #end
 
 class Main extends Sprite
@@ -39,6 +41,7 @@ class Main extends Sprite
 	public static function main():Void
 	{
 		#if haxe3ds
+		RomFS.init();
 		GFX.init();
 		Console.init(BOTTOM);
 		#end
@@ -54,6 +57,12 @@ class Main extends Sprite
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(android.content.Context.getExternalFilesDir()));
 		#elseif ios
 		Sys.setCwd(lime.system.System.documentsDirectory);
+		#elseif haxe3ds
+		try {
+			if (!sys.FileSystem.exists("sdmc:/Chart-Editor/Logs")) {
+				sys.FileSystem.createDirectory("sdmc:/Chart-Editor/Logs");
+			}
+		} catch(e:Dynamic) {}
 		#end
 
 		// Sets the default font ;)
