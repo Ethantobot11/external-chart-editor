@@ -43,11 +43,9 @@ def main():
                 abs_output = os.path.abspath(out_path)
                 
                 try:
-                    subprocess.run(["tex3ds", "-i", abs_input, "-o", abs_output], check=True)
+                    subprocess.run(["tex3ds", "-f", "RGBA8", "-i", abs_input, "-o", abs_output], check=True)
                 except subprocess.CalledProcessError as e:
-                    print(f"Error: tex3ds failed on {file_path} (Exit code {e.returncode}). Skipping file...")
-                except Exception as e:
-                    print(f"Unexpected error running tex3ds on {file_path}: {e}")
+                    print(f"Error: tex3ds failed on {file_path} (Exit code {e.returncode}).")
 
             elif ext == ".xml":
                 out_path = os.path.join(root, name + ".cea")
