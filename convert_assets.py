@@ -26,21 +26,24 @@ def main():
                 try:
                     with Image.open(file_path) as img:
                         img = img.convert("RGBA")
-                        
                         width, height = img.size
                         
                         new_width = (width + 3) & ~3
                         new_height = (height + 3) & ~3
                         
                         if new_width != width or new_height != height:
-                            print(f"Resizing {file_path} from {width}x{height} to {new_width}x{new_height} for 3DS compatibility.")
+                            print(f"Resizing {file_path} from {width}x{height} to {new_width}x{new_height}.")
                             img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
                         
                         img.save(file_path, "PNG")
                 except Exception as e:
                     print(f"Warning: Could not process image {file_path}: {e}")
 
-                subprocess.run(["tex3ds", "-i", file_path, "-o", out_path], check=True)
+                # Use absolute paths to prevent any string quote/path bugs in tex3ds
+                abs_input = os.path.abspath(file_path)
+                abs_output = os.path.abspath(out_path)
+                
+                subprocess.run(["tex3ds", "-i", abs_input, "-o", abs_output], check=True)
 
             elif ext == ".xml":
                 out_path = os.path.join(root, name + ".cea")
