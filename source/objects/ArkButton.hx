@@ -124,7 +124,7 @@ class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
 		#end
 	}
 	
-	public function setBaseColor(col:CitroColor) {
+	public function setBaseColor(#if haxe3ds col:CitroColor #else col:FlxColor #end) {
 		this.baseColor = col;
 		this.bg.color = col;
 	}
