@@ -16,7 +16,7 @@
 			"reflaxe.cpp"
 		],
 		"defines": [],
-		"compileAsCIA": true,
+		"compileAsCIA": false,
 		"optimizations": {
 			"o2Flag": false,
 			"gFlag": false
