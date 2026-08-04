@@ -88,11 +88,9 @@ class CrashHandler
 		#end
 
 		#if (haxe3ds || cafe)
-		// Print directly to the 3DS bottom console screen so you can read the error!
 		#if haxe3ds
-		Console.print("\nCRASH OCCURRED:\n" + fullErrorLog);
+		Sys.println("\nCRASH OCCURRED:\n" + fullErrorLog);
 		#end
-		// Keep the application frozen or let it terminate gracefully without window popups
 		#else
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
@@ -122,7 +120,7 @@ class CrashHandler
 
 		#if (haxe3ds || cafe)
 		#if haxe3ds
-		Console.print("\nCRITICAL ERROR:\n" + fullLog);
+		Sys.println("\nCRITICAL ERROR:\n" + fullLog);
 		#end
 		#else
 		if (FlxG.stage != null && FlxG.stage.window != null)
