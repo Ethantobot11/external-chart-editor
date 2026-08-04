@@ -97,21 +97,22 @@ class EditorStrumLine extends BaseSpriteGroup
 		separator.alpha = 0.5;
 		add(separator);
 
-		// 3. Strums
-		strums = [];
+		strums = new FlxTypedGroup<ChartEditorHelpers.EditorStrum>();
 		for (i in 0...laneCount)
 		{
 			var noteID = isEvent ? startColumn : (startColumn + i);
-			var globalX = this.x + (i * gridSize);
-			var globalY = this.y - (gridSize / 2);
+			
+			var globalX = x + (i * gridSize);
+			var globalY = y - (gridSize / 2);
 			
 			var strum = new ChartEditorHelpers.EditorStrum(globalX, globalY, noteID, gridSize, isEvent);
+			strum.scrollFactor.set(0, 0);
 			strum.alpha = 0.8;
 			if (isEvent && startColumn == -2) strum.color = 0xFF00FFFF;
 			
-			strums.push(strum);
-			add(strum);
+			strums.add(strum);
 		}
+		add(cast strums);
 
 		// 4. Icon
 		if (!isEvent)
