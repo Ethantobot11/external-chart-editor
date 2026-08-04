@@ -18,6 +18,7 @@ import lime.app.Application;
 import debug.FPSCounter;
 
 #if haxe3ds
+@:headerInclude("3ds.h")
 import haxe3ds.Console;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
