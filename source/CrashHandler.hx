@@ -8,12 +8,15 @@ import flixel.FlxG;
 import sys.FileSystem;
 import sys.io.File;
 #end
+#if haxe3ds
+import haxe3ds.Console;
+#end
 
 using StringTools;
 using flixel.util.FlxArrayUtil;
 
 /**
- * Crash Handler.
+ * Crash Handler adapted for Nintendo 3DS and multiplatform.
  * @author YoshiCrafter29, Ne_Eo, MAJigsaw77 and Homura Akemi (HomuHomu833)
  */
 class CrashHandler
@@ -66,9 +69,9 @@ class CrashHandler
 					switch (parent)
 					{
 						case Method(cla, func):
-							stackLabelArr.push('${file.replace('.hx', '')}.$func() [line $line]');
+							stackLabelArr.push('${file.replace(".hx", "")}.$func() [line $line]');
 						case _:
-							stackLabelArr.push('${file.replace('.hx', '')} [line $line]');
+							stackLabelArr.push('${file.replace(".hx", "")} [line $line]');
 					}
 				case LocalFunction(v):
 					stackLabelArr.push('Local Function ${v}');
@@ -78,18 +81,28 @@ class CrashHandler
 		}
 		stackLabel = stackLabelArr.join('\r\n');
 
+		var fullErrorLog = '$m\n$stackLabel';
+
 		#if sys
-		saveErrorMessage('$m\n$stackLabel');
+		saveErrorMessage(fullErrorLog);
 		#end
 
-		#if (!haxe3ds && !cafe)
+		#if (haxe3ds || cafe)
+		// Print directly to the 3DS bottom console screen so you can read the error!
+		#if haxe3ds
+		Console.print("\nCRASH OCCURRED:\n" + fullErrorLog);
+		#end
+		// Keep the application frozen or let it terminate gracefully without window popups
+		#else
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
-			FlxG.stage.window.alert('$m\n$stackLabel', "Error!");
+			FlxG.stage.window.alert(fullErrorLog, "Error!");
 		}
 		#end
 		
+		#if (!haxe3ds && !cafe)
 		lime.system.System.exit(1);
+		#end
 	}
 
 	#if (cpp || hl)
@@ -101,47 +114,53 @@ class CrashHandler
 			log.push(Std.string(message));
 
 		log.push(haxe.CallStack.toString(haxe.CallStack.exceptionStack(true)));
+		var fullLog = log.join('\n');
 
 		#if sys
-		saveErrorMessage(log.join('\n'));
+		saveErrorMessage(fullLog);
 		#end
 
-		#if (!haxe3ds && !cafe)
+		#if (haxe3ds || cafe)
+		#if haxe3ds
+		Console.print("\nCRITICAL ERROR:\n" + fullLog);
+		#end
+		#else
 		if (FlxG.stage != null && FlxG.stage.window != null)
 		{
-			FlxG.stage.window.alert(log.join('\n'), "Critical Error!");
+			FlxG.stage.window.alert(fullLog, "Critical Error!");
 		}
 		#end
 		
+		#if (!haxe3ds && !cafe)
 		lime.system.System.exit(1);
+		#end
 	}
 	#end
 
 	#if sys
 	private static function saveErrorMessage(message:String):Void
 	{
-		#if (haxe3ds || cafe)
-		return;
-		#else
-		var cwd:String = "";
-		try {
-			cwd = Sys.getCwd();
-		} catch(e:Dynamic) {
-			cwd = "";
-		}
-		
-		final folder:String = cwd + 'logs/';
-
 		try
 		{
+			#if (haxe3ds || cafe)
+			var folder:String = "sdmc:/Chart-Editor/Logs/";
+			#else
+			var cwd:String = "";
+			try {
+				cwd = Sys.getCwd();
+			} catch(e:Dynamic) {
+				cwd = "";
+			}
+			final folder:String = cwd + 'logs/';
+			#end
+
 			if (!FileSystem.exists(folder))
 				FileSystem.createDirectory(folder);
 
-			File.saveContent(folder + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', message);
+			File.saveContent(folder + 'crash_' + Date.now().toString().replace(' ', '-').replace(':', "'") + '.txt', message);
 		}
 		catch (e:Dynamic)
 			trace('Couldn\'t save error message. (${e})');
-		#end
 	}
 	#end
 }
