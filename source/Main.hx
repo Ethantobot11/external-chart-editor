@@ -93,8 +93,8 @@ class Main
 			}
 		}
 
-		News.exit();
-		GFX.exit();
+		addChild(new FlxGame(400, 200, TestState3DS, 60, 60, true, false));
+
 		#else
 		Lib.current.addChild(new Main());
 		#end
@@ -137,6 +137,11 @@ class Main
 			if (FlxG.game != null)
 				resetSpriteCache(FlxG.game);
 		});
+
+		#if haxe3ds
+		News.exit();
+		GFX.exit();
+		#end
 	}
 
 	static function resetSpriteCache(sprite:Sprite):Void {
