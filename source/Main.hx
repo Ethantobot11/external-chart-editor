@@ -30,7 +30,7 @@ class Main extends Sprite
 	public static final game = {
 		width: #if haxe3ds 400 #else 1280 #end,
 		height: #if haxe3ds 240 #else 720 #end,
-		initialState: UploadState, // initial game state
+		initialState: #if !haxe3ds UploadState #else TestState3DS #end, // initial game state
 		framerate: 60, // default framerate
 		skipSplash: true, // if the default flixel splash screen should be skipped
 		startFullscreen: false // if the game should start at fullscreen mode
