@@ -22,6 +22,7 @@ import openfl.net.FileReference;
 import haxe3ds.Env;
 import haxe3ds.services.FS;
 import citro.CitroSave;
+import citro.object.CitroAnimate;
 import citro.object.CitroColor;
 #end
 
@@ -182,10 +183,10 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 		calculateStepMs();
 
 		#if haxe3ds
-		// 3DS specific frame initialization logic can go here if needed
-		#elseif nx
-		noteFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "romfs:/assets/images/NOTE_assets.xml");
-		hurtFrames = FlxAtlasFrames.fromSparrow("romfs:/assets/images/HURTNOTE_assets.png", "romfs:/assets/images/HURTNOTE_assets.xml");
+		var noteSprite = new CitroAnimate("romfs:/assets/images/NOTE_assets.t3x", "blue", "romfs:/assets/images/NOTE_assets.cea");
+		var hurtSprite = new CitroAnimate("romfs:/assets/images/HURTNOTE_assets.t3x", "hurt", "romfs:/assets/images/HURTNOTE_assets.cea");
+		add(noteSprite);
+		add(hurtSprite);
 		#else
 		noteFrames = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
 		hurtFrames = FlxAtlasFrames.fromSparrow("assets/images/HURTNOTE_assets.png", "assets/images/HURTNOTE_assets.xml");
@@ -700,26 +701,28 @@ class ChartEditor extends #if !haxe3ds FlxState #else citro.state.CitroState #en
 			ghostNote.x = targetX;
 			ghostNote.y = perfectY;
 			if (col == -1 || col == -2) {
-				ghostNote.frames = null;
-				#if haxe3ds
-				ghostNote.loadGraphic("romfs:/assets/images/eventArrow.png");
-				#else
-				ghostNote.loadGraphic("assets/images/eventArrow.png");
-				#end
-				if(col == -2) ghostNote.color = 0xFF00FFFF;
-				else ghostNote.color = 0xFFFFFFFF;
+			    #if haxe3ds
+			    ghostNote.loadGraphic("romfs:/assets/images/eventArrow.t3x");
+			    #else
+			    ghostNote.frames = null;
+			    ghostNote.loadGraphic("assets/images/eventArrow.png");
+			    #end
+			    
+			    if(col == -2) ghostNote.color = 0xFF00FFFF;
+			    else ghostNote.color = 0xFFFFFFFF;
 			} else {
-				#if haxe3ds
-				var atlas = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "romfs:/assets/images/NOTE_assets.xml");
-				#else
-				var atlas = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
-				#end
-				ghostNote.frames = atlas;
-				ghostNote.color = 0xFFFFFFFF;
-				ghostNote.animation.addByPrefix('purple', 'arrowLEFT');
-				ghostNote.animation.addByPrefix('blue', 'arrowDOWN');
-				ghostNote.animation.addByPrefix('green', 'arrowUP');
-				ghostNote.animation.addByPrefix('red', 'arrowRIGHT');
+			    #if haxe3ds
+			    var ghostAnim = new CitroAnimate("romfs:/assets/images/NOTE_assets.t3x", "arrowLEFT", "romfs:/assets/images/NOTE_assets.cea");
+			    ghostNote.color = 0xFFFFFFFF;
+			    #else
+			    var atlas = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
+			    ghostNote.frames = atlas;
+			    ghostNote.color = 0xFFFFFFFF;
+			    ghostNote.animation.addByPrefix('purple', 'arrowLEFT');
+			    ghostNote.animation.addByPrefix('blue', 'arrowDOWN');
+			    ghostNote.animation.addByPrefix('green', 'arrowUP');
+			    ghostNote.animation.addByPrefix('red', 'arrowRIGHT');
+			    #end
 			}
 
 			if (col != -1 && col != -2) {
