@@ -117,6 +117,10 @@
 	<!-- Category Type for Apple Systems -->
 	<config:ios category_type="public.app-category.music-games" />
 	<config:mac category_type="public.app-category.music-games" />
+
+	<set name="no-threading" if="cafe" />
+	<app define="target.threaded=false" if="cafe" />
+	
 	<!-- Lime Fix -->
 	<haxedef name="lime_use_old_deltatime" />
 
