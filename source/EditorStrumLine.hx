@@ -67,8 +67,13 @@ class EditorStrumLine extends FlxSpriteGroup
 		{
 			icon = new FlxSprite();
 			var charName = (startColumn < 4) ? "dad" : "bf";
+			#if !haxe3ds
 			var iconPath = "assets/images/icons/icon-" + charName + ".png";
 			if (!openfl.utils.Assets.exists(iconPath)) iconPath = "assets/images/icons/icon-face.png";
+			#else
+			var iconPath = "romfs:/assets/images/icons/icon-" + charName + ".png";
+			if (!openfl.utils.Assets.exists(iconPath)) iconPath = "romfs:/assets/images/icons/icon-face.png";
+			#end
 
 			if (openfl.utils.Assets.exists(iconPath)) {
 				icon.loadGraphic(iconPath, true, 150, 150);
