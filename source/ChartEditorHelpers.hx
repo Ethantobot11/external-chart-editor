@@ -2,6 +2,7 @@ package;
 
 #if haxe3ds
 import citro.object.CitroSprite;
+import citro.object.CitroAnimate;
 #end
 
 typedef SongData = {
@@ -39,18 +40,27 @@ class EditorNoteData {
 	}
 }
 
-class EditorStrum extends #if !haxe3ds FlxSprite #else CitroSprite #end {
+class EditorStrum extends #if !haxe3ds FlxSprite #else CitroAnimate #end {
 	public var resetTimer:Float = 0;
 	public var colIdx:Int = 0;
 	public var isEventStrum:Bool = false;
+
 	public function new(x:Float, y:Float, colIdx:Int, gridSize:Int, isEvent:Bool = false) {
+		#if haxe3ds
+		// 3DS uses CitroAnimate passing the .t3x sheet and .cea map generated from xml
+		super("romfs:/assets/images/NOTE_assets.t3x", "static", "romfs:/assets/images/NOTE_assets.cea");
+		#else
 		super(x, y);
+		#end
+
+		this.x = x;
+		this.y = y;
 		this.colIdx = colIdx;
 		this.isEventStrum = isEvent;
 
 		if (isEventStrum) {
 			#if haxe3ds
-			loadGraphic("romfs:/assets/images/eventArrow.png");
+			loadGraphic("romfs:/assets/images/eventArrow.t3x");
 			#else
 			loadGraphic("assets/images/eventArrow.png");
 			#end
@@ -59,9 +69,6 @@ class EditorStrum extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 		} else {
 			#if !haxe3ds
 			var atlas = FlxAtlasFrames.fromSparrow("assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
-			#else
-			var atlas = FlxAtlasFrames.fromSparrow("romfs:/assets/images/NOTE_assets.png", "assets/images/NOTE_assets.xml");
-			#end
 			frames = atlas;
 			antialiasing = true;
 			switch (colIdx % 4) {
@@ -85,19 +92,35 @@ class EditorStrum extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 			setGraphicSize(gridSize, gridSize);
 			updateHitbox();
 			playAnim('static');
+			#else
+			var animPrefix = switch (colIdx % 4) {
+				case 0: "arrowLEFT";
+				case 1: "arrowDOWN";
+				case 2: "arrowUP";
+				case _: "arrowRIGHT";
+			};
+			play(animPrefix);
+			scale.set(gridSize / width, gridSize / height);
+			updateHitbox();
+			#end
 		}
 	}
+
 	public function playAnim(animName:String, force:Bool = false) {
 		if (isEventStrum) return;
+		#if !haxe3ds
 		animation.play(animName, force);
 		centerOffsets();
 		centerOrigin();
+		#else
+		play(animName);
+		#end
 		if (animName == 'confirm') resetTimer = 0.15;
 		else resetTimer = 0;
 	}
 
 	override function update(elapsed:Float) {
-		super.update(elapsed);
+		super.update();
 		if (resetTimer > 0) {
 			resetTimer -= elapsed;
 			if (resetTimer <= 0) playAnim('static');
@@ -105,21 +128,32 @@ class EditorStrum extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 	}
 }
 
-class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
+class EditorNote extends #if !haxe3ds FlxSprite #else CitroAnimate #end {
 	public var data:EditorNoteData;
+	#if !haxe3ds
 	public var sustainPiece:FlxSprite;
 	public var sustainEnd:FlxSprite;
+	#else
+	public var sustainPiece:CitroAnimate;
+	public var sustainEnd:CitroAnimate;
+	#end
 	var gridSize:Int;
 	public var isEvent:Bool = false;
 
 	public function new(x:Float, y:Float, data:EditorNoteData, gridSize:Int, ?customNotePath:String) {
+		#if haxe3ds
+		super("romfs:/assets/images/NOTE_assets.t3x", "scroll", "romfs:/assets/images/NOTE_assets.cea");
+		#else
 		super(x, y);
 		sustainPiece = new FlxSprite();
 		sustainEnd = new FlxSprite();
+		#end
+		this.x = x;
+		this.y = y;
 	}
 	
 	public function reload(x:Float, y:Float, data:EditorNoteData, gridSize:Int, 
-						   cachedFrames:FlxAtlasFrames, cachedHurtFrames:FlxAtlasFrames, 
+						   cachedFrames:Dynamic, cachedHurtFrames:Dynamic, 
 						   ?customNotePath:String) {
 		this.x = x;
 		this.y = y;
@@ -134,16 +168,21 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 		this.scale.set(1,1);
 		
 		if (isEvent) {
+			#if haxe3ds
+			loadGraphic("romfs:/assets/images/eventArrow.t3x");
+			#else
 			loadGraphic("assets/images/eventArrow.png");
+			#end
 			setGraphicSize(gridSize, gridSize);
 			updateHitbox();
-			if(data.column == -2) color = 0xFF00FFFF; // Global
-			else color = 0xFFCCCCCC; // Local
+			if(data.column == -2) color = 0xFF00FFFF;
+			else color = 0xFFCCCCCC;
 		} else {
 			var colIdx = data.column % 4;
 			var loadedCustom:Bool = false;
 
 			if (customNotePath != null && data.noteType != "Normal" && data.noteType != "Hurt Note") {
+				#if !haxe3ds
 				var path = haxe.io.Path.join([customNotePath, data.noteType + ".png"]);
 				if (sys.FileSystem.exists(path)) {
 					loadGraphic(path);
@@ -151,9 +190,11 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 					updateHitbox();
 					loadedCustom = true;
 				}
+				#end
 			}
 
 			if (!loadedCustom) {
+				#if !haxe3ds
 				if (data.noteType == "Hurt Note") 
 					this.frames = cachedHurtFrames;
 				else 
@@ -172,12 +213,25 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 				animation.play('scroll');
 				setGraphicSize(gridSize, gridSize);
 				updateHitbox();
+				#else
+				// 3DS Note loading via CitroAnimate
+				var colorPrefix = switch(colIdx) {
+					case 0: "purple";
+					case 1: "blue";
+					case 2: "green";
+					case _: "red";
+				};
+				play(colorPrefix);
+				scale.set(gridSize / width, gridSize / height);
+				updateHitbox();
+				#end
 			}
 
 			// Sustains
 			if (data.length > 0) {
-				sustainPiece.visible = true;
-				sustainEnd.visible = true;
+				#if !haxe3ds
+				if (sustainPiece != null) sustainPiece.visible = true;
+				if (sustainEnd != null) sustainEnd.visible = true;
 				sustainPiece.alpha = 0.6;
 				sustainEnd.alpha = 0.6;
 
@@ -200,6 +254,7 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 
 				sustainPiece.animation.play('hold');
 				sustainEnd.animation.play('hold');
+				#end
 			} else {
 				if(sustainPiece != null) sustainPiece.visible = false;
 				if(sustainEnd != null) sustainEnd.visible = false;
@@ -208,6 +263,7 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 	}
 	
 	public function updateTail(stepMs:Float, scrollSpeed:Float = 1) {
+		#if !haxe3ds
 		if (sustainPiece != null && sustainEnd != null && data.length > 0) {
 			var visualWidth = gridSize * 0.4;
 			var centerX = x + (width / 2);
@@ -229,13 +285,18 @@ class EditorNote extends #if !haxe3ds FlxSprite #else CitroSprite #end {
 			sustainEnd.x = centerX - (sustainEnd.width / 2);
 			sustainEnd.y = sustainPiece.y + pieceHeight;
 		}
+		#end
 	}
 
 	override function draw() {
+		#if !haxe3ds
 		if (sustainPiece != null && sustainEnd != null && data.length > 0 && sustainPiece.visible) {
 			sustainPiece.draw();
 			sustainEnd.draw();
 		}
 		if (visible) super.draw();
+		#else
+		super.update();
+		#end
 	}
 }
