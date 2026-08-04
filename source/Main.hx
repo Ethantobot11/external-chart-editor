@@ -18,13 +18,15 @@ import lime.app.Application;
 import debug.FPSCounter;
 
 #if haxe3ds
-@:headerInclude("3ds.h")
 import haxe3ds.Console;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
 import haxe3ds.services.RomFS;
 #end
 
+#if haxe3ds
+@:headerInclude("3ds.h")
+#end
 class Main extends Sprite
 {
 	public var fpsVar:FPSCounter;
