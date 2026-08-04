@@ -11,13 +11,14 @@ import flixel.group.FlxSpriteGroup;
 import citro.backend.CitroColor;
 import citro.object.CitroObject;
 import citro.object.CitroSprite;
+import citro.object.CitroText;
 import citro.state.CitroCamera;
 #end
 
 class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
 {
 	public var bg: #if !haxe3ds FlxSprite #else CitroSprite #end;
-	public var label: #if !haxe3ds FlxText # else CitroText #end;
+	public var label: #if !haxe3ds FlxText #else CitroText #end;
 	
 	public var onClick:Void->Void;
 	public var isHovered:Bool = false;
@@ -71,7 +72,14 @@ class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
 		bg.y = y;
 		bg.color = baseColor;
 		
-		// Setup label for Citro if you have CitroText/CitroSprite text equivalents here
+		var textSize:Float = 12 * scale;
+		if (textSize < 8) textSize = 8;
+
+		label = new CitroText(x, y, text);
+		label.color = 0xFFFFFFFF;
+		label.setBorderStyle(0xFF000000, 1, OUTLINE);
+		label.scale.set(textSize / 12, textSize / 12);
+		label.y = y + (height - label.height) / 2;
 		#end
 	}
 
@@ -105,7 +113,8 @@ class ArkButton extends #if !haxe3ds FlxSpriteGroup #else CitroObject #end
 		}
 		#else
 		super.update(delta);
-		// Add Citro touch coordinate overlap detection for 3DS bottom screen here if required
+		bg.update(delta);
+		label.update(delta);
 		#end
 	}
 	
