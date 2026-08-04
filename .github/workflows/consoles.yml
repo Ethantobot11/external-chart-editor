@@ -142,11 +142,7 @@ jobs:
         with:
           name: workspace-debug-zip
           path: |
-            export/
-            build/
-            *.a
-            *.o
-            .haxelib/hxcpp/git/
+            buildFiles/
           if-no-files-found: ignore
           
       - name: Compile for Wii U via HxCompileU
