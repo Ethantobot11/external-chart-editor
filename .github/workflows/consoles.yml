@@ -65,7 +65,7 @@ jobs:
             haxelib git hxu_jansson https://github.com/Haxe-WiiU/HxU_Jansson --quiet || true
             haxelib git hxu_vorbis https://github.com/Haxe-WiiU/HxU_Vorbis --quiet || true
             haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
-            haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.cpp --quiet
+            haxelib git reflaxe.cpp https://github.com/Ethantobot11/reflaxe.CPP --quiet
             haxelib dev reflaxe .haxelib/reflaxe/git
             haxelib dev reflaxe.cpp .haxelib/reflaxe.cpp/git
           fi          
