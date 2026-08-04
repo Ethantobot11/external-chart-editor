@@ -6,7 +6,7 @@ typedef BaseFixedSubState = CitroSubState;
 #else
 import flixel.FlxSubState;
 import flixel.FlxBasic;
-typedef BaseFixedSubState = FlxFixedSubState;
+typedef BaseFixedSubState = FlxSubState;
 #end
 
 class FlxFixedSubState extends BaseFixedSubState {
