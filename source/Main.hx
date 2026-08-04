@@ -38,11 +38,6 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
-		#if haxe3ds
-		RomFS.init();
-		GFX.init();
-		Console.init(BOTTOM);
-		#end
 		Lib.current.addChild(new Main());
 	}
 
@@ -50,6 +45,12 @@ class Main extends Sprite
 	{
 		super();
 		CrashHandler.init();
+
+		#if haxe3ds
+		RomFS.init();
+		GFX.init();
+		Console.init(BOTTOM);
+		#end
 		
 		#if android
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(android.content.Context.getExternalFilesDir()));
