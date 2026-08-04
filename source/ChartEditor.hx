@@ -572,6 +572,7 @@ class ChartEditor extends FlxState
 				ghostNote.loadGraphic("romfs:/assets/images/eventArrow.png");
 				#else
 				ghostNote.loadGraphic("assets/images/eventArrow.png");
+				#end
 				if(col == -2) ghostNote.color = 0xFF00FFFF;
 				else ghostNote.color = 0xFFFFFFFF;
 			} else {
