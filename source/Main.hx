@@ -28,8 +28,8 @@ class Main extends Sprite
 {
 	public var fpsVar:FPSCounter;
 	public static final game = {
-		width: 1280, // WINDOW width
-		height: 720, // WINDOW height
+		width: #if haxe3ds 400 #else 1280 #end,
+		height: #if haxe3ds 240 #else 720 #end,
 		initialState: UploadState, // initial game state
 		framerate: 60, // default framerate
 		skipSplash: true, // if the default flixel splash screen should be skipped
@@ -38,6 +38,12 @@ class Main extends Sprite
 
 	public static function main():Void
 	{
+		#if haxe3ds
+		RomFS.init();
+		GFX.init();
+		Console.init(BOTTOM);
+		#end
+			
 		Lib.current.addChild(new Main());
 	}
 
@@ -45,12 +51,6 @@ class Main extends Sprite
 	{
 		super();
 		CrashHandler.init();
-
-		#if haxe3ds
-		RomFS.init();
-		GFX.init();
-		Console.init(BOTTOM);
-		#end
 		
 		#if android
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(android.content.Context.getExternalFilesDir()));
