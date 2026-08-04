@@ -1,5 +1,6 @@
 package openfl.net;
 
+#if !haxe3ds
 #if !flash
 import haxe.io.Path;
 import haxe.Timer;
@@ -1583,4 +1584,5 @@ class FileReference extends EventDispatcher
 }
 #else
 typedef FileReference = flash.net.FileReference;
+#end
 #end
