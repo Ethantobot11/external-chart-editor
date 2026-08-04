@@ -10,6 +10,7 @@ import haxe3ds.services.HID;
 import haxe3ds.services.GFX;
 import citro.state.CitroState;
 import citro.object.CitroText;
+import citro.object.CitroButton;
 import citro.object.CitroSprite;
 typedef BaseState = CitroState;
 #else
