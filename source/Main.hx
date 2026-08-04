@@ -4,6 +4,7 @@ package;
 import android.content.Context;
 #end
 
+#if (!haxe3ds)
 import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxGame;
@@ -14,8 +15,8 @@ import openfl.Assets;
 import openfl.Lib;
 import openfl.display.Sprite;
 import lime.app.Application;
-
 import debug.FPSCounter;
+#end
 
 #if haxe3ds
 import haxe3ds.Console;
@@ -28,16 +29,19 @@ import haxe3ds.services.RomFS;
 #if haxe3ds
 @:headerInclude("3ds.h")
 #end
-class Main extends Sprite
+class Main #if (!haxe3ds) extends Sprite #end
 {
+	#if (!haxe3ds)
 	public var fpsVar:FPSCounter;
+	#end
+
 	public static final game = {
 		width: #if haxe3ds 400 #else 1280 #end,
 		height: #if haxe3ds 240 #else 720 #end,
-		initialState: #if !haxe3ds UploadState #else TestState3DS #end, // initial game state
-		framerate: 60, // default framerate
-		skipSplash: true, // if the default flixel splash screen should be skipped
-		startFullscreen: false // if the game should start at fullscreen mode
+		initialState: #if !haxe3ds UploadState #else TestState3DS #end,
+		framerate: 60,
+		skipSplash: true,
+		startFullscreen: false
 	};
 
 	public static function main():Void
@@ -52,19 +56,20 @@ class Main extends Sprite
 			}
 		} catch(e:Dynamic) {}
 		
-	    Sys.println("Boot test successful!");
-	    while (APT.mainLoop()) {
+		Sys.println("Boot test successful!");
+		while (APT.mainLoop()) {
 			if (HID.keyPressed(HIDKey.START)) {
 				break;
-	   		}
+			}
 		}
 		
-	    GFX.exit();
-	    #else
-	    Lib.current.addChild(new Main());
-	    #end
+		GFX.exit();
+		#else
+		Lib.current.addChild(new Main());
+		#end
 	}
 
+	#if (!haxe3ds)
 	public function new()
 	{
 		super();
@@ -76,7 +81,6 @@ class Main extends Sprite
 		Sys.setCwd(lime.system.System.documentsDirectory);
 		#end
 			
-		// Sets the default font ;)
 		FlxAssets.FONT_DEFAULT = FlxAssets.FONT_DEBUGGER = AssetPaths.vcr__ttf;
 		FlxSprite.defaultAntialiasing = true;
 
@@ -88,7 +92,6 @@ class Main extends Sprite
 		fpsVar = new FPSCounter(10, 3, 0xFFFFFF);
 		addChild(fpsVar);
 
-		// shader coords fix
 		FlxG.signals.gameResized.add(function (w, h) {
 			if(fpsVar != null)
 				fpsVar.positionFPS(10, 3, Math.min(w / FlxG.width, h / FlxG.height));
@@ -111,4 +114,5 @@ class Main extends Sprite
 			sprite.__cacheBitmapData = null;
 		}
 	}
+	#end
 }
