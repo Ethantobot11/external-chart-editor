@@ -22,7 +22,7 @@ if [ -d "assets" ]; then
     nameonly="${filename%.*}"
     ceafile="${dir}/${nameonly}.cea"
     
-    echo "Converting $xmlfile to $ceafile..."
+    echo "Starting converting $xmlfile to $ceafile..."
     python3 - <<EOF
 import xml.etree.ElementTree as ET
 import re
