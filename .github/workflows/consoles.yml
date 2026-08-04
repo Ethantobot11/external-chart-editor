@@ -136,9 +136,19 @@ jobs:
         run: |
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
+          apt-get update && apt-get install -y ffmpeg
           export PATH=/opt/devkitpro/tools/bin:$PATH
           if [ -d "assets" ]; then
-            find assets/ -type f \( -name "*.ogg" -o -name "*.mp3" \) | while read file; do
+            # Find and convert MP3s to OGG first
+            find assets/ -type f -name "*.mp3" | while read file; do
+              dir=$(dirname "$file")
+              filename=$(basename "$file")
+              nameonly="${filename%.*}"
+              echo "Converting MP3 $file to OGG..."
+              ffmpeg -i "$file" -q:a 4 "${dir}/${nameonly}.ogg"
+              rm "$file" # Optional: remove the old mp3
+            done
+            find assets/ -type f -name "*.ogg" | while read file; do
               dir=$(dirname "$file")
               filename=$(basename "$file")
               nameonly="${filename%.*}"
