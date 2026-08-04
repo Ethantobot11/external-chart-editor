@@ -1,5 +1,10 @@
 package;
 
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
+
 #if haxe3ds
 import haxe3ds.services.HID;
 import haxe3ds.services.GFX;
@@ -22,11 +27,6 @@ import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.addons.display.FlxGridOverlay;
 typedef BaseState = FlxState;
-#end
-
-#if sys
-import sys.io.File;
-import sys.FileSystem;
 #end
 
 #if haxe3ds
