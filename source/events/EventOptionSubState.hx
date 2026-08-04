@@ -16,7 +16,7 @@ import citro.object.CitroText;
 import citro.state.CitroSubState;
 #end
 
-class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubState #end
+class EventOptionSubState extends #if !haxe3ds FlxSubState #else CitroSubState #end
 {
 	var note:EditorNoteData;
 	var onEdit:Void->Void;
