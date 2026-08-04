@@ -16,7 +16,7 @@ import citro.object.CitroText;
 import citro.state.CitroSubState;
 #end
 
-class EventOptionSubState extends #if !haxe3ds FlxSubState #else CitroSubState #end
+class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubState #end
 {
 	var note:EditorNoteData;
 	var onEdit:Void->Void;
@@ -167,7 +167,7 @@ class EventOptionSubState extends #if !haxe3ds FlxSubState #else CitroSubState #
 		#end
 	}
 
-	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 		
 		#if !haxe3ds
@@ -188,12 +188,12 @@ class EventOptionSubState extends #if !haxe3ds FlxSubState #else CitroSubState #
 		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
 		#end
 		#else
-		box.update(delta);
-		border.update(delta);
-		titleText.update(delta);
-		subText.update(delta);
-		btnEdit.update(delta);
-		btnDelete.update(delta);
+		box.update(elapsed);
+		border.update(elapsed);
+		titleText.update(elapsed);
+		subText.update(elapsed);
+		btnEdit.update(elapsed);
+		btnDelete.update(elapsed);
 		#end
 	}
 }
