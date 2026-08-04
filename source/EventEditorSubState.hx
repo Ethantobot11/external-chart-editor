@@ -4,14 +4,14 @@ package;
 import citro.state.CitroSubState;
 import citro.object.CitroText;
 import citro.object.CitroSprite;
-typedef BaseFixedSubState = CitroSubState;
+typedef FixedSubState = CitroSubState;
 #else
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-typedef BaseFixedSubState = FlxFixedSubState;
+typedef FixedSubState = FlxFixedSubState;
 #end
 
 #if haxe3ds
@@ -19,7 +19,7 @@ import haxe3ds.services.HID;
 @:cppFileCode('#include <3ds.h>')
 #end
 
-class EventEditorSubState extends BaseFixedSubState {
+class EventEditorSubState extends FixedSubState {
 	var note:EditorNoteData;
 	var onSave:Void->Void;
 	
