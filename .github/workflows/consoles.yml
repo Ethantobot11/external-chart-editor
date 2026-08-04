@@ -137,6 +137,7 @@ jobs:
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
           export PATH=/opt/devkitpro/tools/bin:$PATH
+          chmod +x convert_assets.sh
           ./convert_assets.sh
 
       - name: Compile for 3DS via Haxe3DS (Safe Check)
