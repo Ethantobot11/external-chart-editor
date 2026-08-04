@@ -37,7 +37,7 @@ import citro.state.CitroState;
 @:headerInclude("3ds.h")
 #end
 
-class UploadState extends #if haxe3ds CitroState #else FlxState #end
+class UploadState extends BaseState
 {
 	// Data Containers
 	#if !haxe3ds
