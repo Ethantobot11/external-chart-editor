@@ -1,5 +1,6 @@
 package events;
 
+#if !haxe3ds
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxSubState;
@@ -8,8 +9,13 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
+#else
+import citro.backend.CitroColor;
+import citro.object.CitroSprite;
+import citro.state.CitroSubState;
+#end
 
-class EventOptionSubState extends FlxFixedSubState
+class EventOptionSubState extends #if !haxe3ds FlxFixedSubState #else CitroSubState #end
 {
 	var note:EditorNoteData;
 	var onEdit:Void->Void;
@@ -18,17 +24,25 @@ class EventOptionSubState extends FlxFixedSubState
 	var targetX:Float;
 	var targetY:Float;
 
+	#if !haxe3ds
 	var bg:FlxSprite;
 	var box:FlxSprite;
 	var title:FlxText;
 	var btnEdit:FlxButton;
 	var btnDelete:FlxButton;
 	var border:FlxSprite;
+	#else
+	var bg:CitroSprite;
+	var box:CitroSprite;
+	var border:CitroSprite;
+	#end
 
 	public function new(note:EditorNoteData, x:Float, y:Float, onEdit:Void->Void, onDelete:Void->Void)
 	{
 		super();
+		#if !haxe3ds
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		#end
 		this.note = note;
 		this.targetX = x;
 		this.targetY = y;
@@ -40,6 +54,7 @@ class EventOptionSubState extends FlxFixedSubState
 	{
 		super.create();
 
+		#if !haxe3ds
 		bg = new FlxSprite().makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		bg.alpha = 0;
 		bg.scrollFactor.set(0,0);
@@ -92,26 +107,42 @@ class EventOptionSubState extends FlxFixedSubState
 
 		FlxTween.tween(box, {alpha: 1, "scale.x": 1, "scale.y": 1}, 0.3, {ease: FlxEase.backOut});
 		FlxTween.tween(border, {alpha: 1, "scale.x": 1, "scale.y": 1}, 0.3, {ease: FlxEase.backOut});
+		#else
+		bg = new CitroSprite();
+		box = new CitroSprite();
+		border = new CitroSprite();
+		add(bg);
+		add(border);
+		add(box);
+		#end
 	}
 
+	#if !haxe3ds
 	function styleButton(btn:FlxButton, color:Int) {
 		btn.makeGraphic(140, 30, color);
 		btn.label.setFormat(null, 14, FlxColor.WHITE, CENTER);
 		btn.scrollFactor.set(0,0);
 	}
+	#end
 
 	function closeAnim(onComplete:Void->Void) {
+		#if !haxe3ds
 		FlxTween.tween(box, {alpha: 0, "scale.x": 0.1, "scale.y": 0.1}, 0.2, {ease: FlxEase.backIn});
 		FlxTween.tween(border, {alpha: 0, "scale.x": 0.1, "scale.y": 0.1}, 0.2, {ease: FlxEase.backIn});
 		FlxTween.tween(bg, {alpha: 0}, 0.2, {onComplete: function(t:FlxTween) {
 			close();
 			onComplete();
 		}});
+		#else
+		close();
+		if(onComplete != null) onComplete();
+		#end
 	}
 
-	override function update(elapsed:Float) {
+	override function update(#if !haxe3ds elapsed:Float #else delta:Int #end) {
 		super.update(elapsed);
-		// Tıklama ile kapatma (Menü dışına)
+		
+		#if !haxe3ds
 		#if (FLX_TOUCH || haxe3ds || cafe)
 		for (touch in FlxG.touches.list) {
 			if (touch.justPressed) {
@@ -125,9 +156,10 @@ class EventOptionSubState extends FlxFixedSubState
 		if(FlxG.mouse.justPressed && !FlxG.mouse.overlaps(box)) {
 			closeAnim(function(){});
 		}
-		
 
 		if(FlxG.keys.justPressed.ESCAPE) closeAnim(function(){});
+		#end
+		#else
 		#end
 	}
 }
