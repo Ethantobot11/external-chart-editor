@@ -51,7 +51,8 @@ class Main extends Sprite
 	    while (APT.mainLoop()) {
 			if (HID.keyPressed(HIDKey.START)) {
 				break;
-	    }
+	   		}
+		}
 	    GFX.exit();
 	    #else
 	    Lib.current.addChild(new Main());
