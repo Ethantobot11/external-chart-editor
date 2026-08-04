@@ -343,3 +343,60 @@ class UploadState extends BaseState
 		}
 	}
 }
+
+class ModernButton extends flixel.group.FlxSpriteGroup {
+	#if !haxe3ds
+	public var bg:FlxSprite;
+	public var label:FlxText;
+	#else
+	public var bg:CitroSprite;
+	public var label:CitroText;
+	#end
+	var onClick:Void->Void;
+	var hoverColor:Int;
+	var baseColor:Int;
+
+	public function new(x:Float, y:Float, text:String, color:Int, onClick:Void->Void) {
+		super(x, y);
+		this.onClick = onClick;
+		this.baseColor = color;
+
+		#if !haxe3ds
+		bg = new FlxSprite().makeGraphic(300, 50, 0xFFFFFFFF);
+		#else
+		bg = new CitroSprite().makeGraphic(300, 50, 0xFFFFFFFF);
+		#end
+		bg.color = color;
+		bg.alpha = 0.8;
+		add(bg);
+		#if !haxe3ds
+		var border = new FlxSprite(0, 0).makeGraphic(300, 4, 0x44000000);
+		#else
+		var border = new CitroSprite(0, 0).makeGraphic(300, 4, 0x44000000);
+		#end
+		border.y = 46;
+		add(border);
+		#if !haxe3ds
+		label = new FlxText(0, 0, 300, text, 16);
+		#else
+		label = new CitroText(0, 0, 300, text, 16);
+		#end
+		label.setFormat(null, 16, FlxColor.WHITE, CENTER, OUTLINE, FlxColor.BLACK);
+		label.y = (50 - label.height) / 2;
+		add(label);
+	}
+
+	override function update(elapsed:Float) {
+		super.update(elapsed);
+		#if !haxe3ds
+		if (FlxG.mouse.overlaps(bg)) {
+			bg.alpha = 1;
+			if (FlxG.mouse.justPressed && active) {
+				if (onClick != null) onClick();
+			}
+		} else {
+			bg.alpha = 0.8;
+		}
+		#end
+	}
+}
