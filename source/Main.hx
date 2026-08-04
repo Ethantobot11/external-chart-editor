@@ -46,6 +46,11 @@ class Main extends Sprite
 		RomFS.init();
 		GFX.init();
 		Console.init(BOTTOM);
+		try {
+			if (!sys.FileSystem.exists("sdmc:/Chart-Editor/Logs")) {
+				sys.FileSystem.createDirectory("sdmc:/Chart-Editor/Logs");
+			}
+		} catch(e:Dynamic) {}
 		
 	    Sys.println("Boot test successful!");
 	    while (APT.mainLoop()) {
@@ -53,6 +58,7 @@ class Main extends Sprite
 				break;
 	   		}
 		}
+		
 	    GFX.exit();
 	    #else
 	    Lib.current.addChild(new Main());
@@ -68,14 +74,8 @@ class Main extends Sprite
 		Sys.setCwd(haxe.io.Path.addTrailingSlash(android.content.Context.getExternalFilesDir()));
 		#elseif ios
 		Sys.setCwd(lime.system.System.documentsDirectory);
-		#elseif haxe3ds
-		try {
-			if (!sys.FileSystem.exists("sdmc:/Chart-Editor/Logs")) {
-				sys.FileSystem.createDirectory("sdmc:/Chart-Editor/Logs");
-			}
-		} catch(e:Dynamic) {}
 		#end
-
+			
 		// Sets the default font ;)
 		FlxAssets.FONT_DEFAULT = FlxAssets.FONT_DEBUGGER = AssetPaths.vcr__ttf;
 		FlxSprite.defaultAntialiasing = true;
