@@ -68,7 +68,7 @@ jobs:
             haxelib git reflaxe.cpp https://github.com/Ethantobot11/reflaxe.CPP --quiet
             haxelib dev reflaxe .haxelib/reflaxe/git
             haxelib dev reflaxe.cpp .haxelib/reflaxe.cpp/git
-          fi          
+          fi         
 
       - name: Inject HxCU_Meta.json for Haxelibs
         if: inputs.name == 'Wii U'
@@ -91,7 +91,9 @@ jobs:
       - name: Install Console Toolchains
         run: |
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
+            # ADDED: citro3d and citro2d installed here for hardware rendering & CitroText
             dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d general-tools
+            
             mkdir -p /opt/devkitpro/tools/bin
             wget -q https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip -O bannertool.zip
             unzip -q bannertool.zip -d bannertool_extracted
