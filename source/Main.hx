@@ -19,6 +19,7 @@ import debug.FPSCounter;
 
 #if haxe3ds
 import haxe3ds.Console;
+import haxe3ds.services.ATP;
 import haxe3ds.services.GFX;
 import haxe3ds.services.HID;
 import haxe3ds.services.RomFS;
@@ -48,6 +49,8 @@ class Main extends Sprite
 		
 	    Sys.println("Boot test successful!");
 	    while (APT.mainLoop()) {
+			if (HID.keyPressed(HIDKey.START)) {
+				break;
 	    }
 	    GFX.exit();
 	    #else
