@@ -2,6 +2,7 @@ import os
 import subprocess
 import re
 import xml.etree.ElementTree as ET
+from PIL import Image
 
 def main():
     os.makedirs("assets/romfs/haxe3ds", exist_ok=True)
@@ -20,7 +21,22 @@ def main():
 
             if ext == ".png":
                 out_path = os.path.join(root, name + ".t3x")
-                print(f"Converting {file_path} to T3X...")
+                print(f"Processing and converting {file_path} to T3X...")
+                
+                try:
+                    with Image.open(file_path) as img:
+                        width, height = img.size
+
+                        new_width = (width + 3) & ~3
+                        new_height = (height + 3) & ~3
+                        
+                        if new_width != width or new_height != height:
+                            print(f"Resizing {file_path} from {width}x{height} to {new_width}x{new_height} for 3DS compatibility.")
+                            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                            img.save(file_path)
+                except Exception as e:
+                    print(f"Warning: Could not check/resize image {file_path}: {e}")
+
                 subprocess.run(["tex3ds", "-i", file_path, "-o", out_path], check=True)
 
             elif ext == ".xml":
