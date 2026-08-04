@@ -22,9 +22,9 @@ import haxe3ds.services.GFX;
 
 class UploadState extends FlxState
 {
-	var instPath:String = "";
-	var voicesPath:String = "";
-	var voicesOppPath:String = "";
+	var instBytes:ByteArray = null;
+	var voicesBytes:ByteArray = null;
+	var voicesOppBytes:ByteArray = null;
 	var chartData:String = "";
 	var eventsData:String = "";
 	var customNotePath:String = "";
@@ -64,7 +64,7 @@ class UploadState extends FlxState
 
 		btnContinue = new ModernButton(centerX - 160, FlxG.height - 60, "START EDITOR", 0xFF00CC00, function() {
 			#if haxe3ds
-			FlxG.switchState(new ChartEditor(instPath, voicesPath, voicesOppPath, chartData, eventsData, customNotePath));
+			FlxG.switchState(new ChartEditor(instBytes, voicesBytes, voicesOppBytes, chartData, eventsData, customNotePath));
 			#end
 		});
 		btnContinue.alpha = 0.5;
@@ -107,13 +107,19 @@ class UploadState extends FlxState
 	{
 		switch(type) {
 			case "inst":
-				instPath = path;
+				#if sys
+				instBytes = ByteArray.fromFile(path);
 				btnContinue.active = true;
 				btnContinue.alpha = 1;
+				#end
 			case "voices":
-				voicesPath = path;
+				#if sys
+				voicesBytes = ByteArray.fromFile(path);
+				#end
 			case "voices_opp":
-				voicesOppPath = path;
+				#if sys
+				voicesOppBytes = ByteArray.fromFile(path);
+				#end
 			case "chart":
 				#if sys
 				chartData = File.getContent(path);
