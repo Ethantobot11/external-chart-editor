@@ -7,12 +7,14 @@ import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
 import flixel.util.FlxColor;
 import flixel.addons.display.FlxGridOverlay;
+#if !haxe3ds
 import openfl.utils.ByteArray;
 import openfl.net.FileReference;
 import openfl.events.Event;
 import openfl.net.FileFilter;
 import lime.ui.FileDialog;
 import lime.ui.FileDialogType;
+#end
 
 #if sys
 import sys.io.File;
