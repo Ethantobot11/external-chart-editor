@@ -39,11 +39,15 @@ def main():
                 except Exception as e:
                     print(f"Warning: Could not process image {file_path}: {e}")
 
-                # Use absolute paths to prevent any string quote/path bugs in tex3ds
                 abs_input = os.path.abspath(file_path)
                 abs_output = os.path.abspath(out_path)
                 
-                subprocess.run(["tex3ds", "-i", abs_input, "-o", abs_output], check=True)
+                try:
+                    subprocess.run(["tex3ds", "-i", abs_input, "-o", abs_output], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Error: tex3ds failed on {file_path} (Exit code {e.returncode}). Skipping file...")
+                except Exception as e:
+                    print(f"Unexpected error running tex3ds on {file_path}: {e}")
 
             elif ext == ".xml":
                 out_path = os.path.join(root, name + ".cea")
@@ -66,18 +70,29 @@ def main():
                     with open(out_path, "w", encoding="utf-8") as f:
                         f.write("\n".join(lines))
                 except Exception as e:
-                    print(f"Error parsing {file_path}: {e}")
+                    print(f"Error parsing XML file {file_path}: {e}. Skipping...")
 
             elif ext == ".mp3":
                 out_path = os.path.join(root, name + ".ogg")
                 print(f"Converting {file_path} to OGG...")
-                subprocess.run(["ffmpeg", "-y", "-i", file_path, "-q:a", "4", out_path], check=True)
-                os.remove(file_path)
+                try:
+                    subprocess.run(["ffmpeg", "-y", "-i", file_path, "-q:a", "4", out_path], check=True)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                except subprocess.CalledProcessError as e:
+                    print(f"Error: ffmpeg failed to convert {file_path} (Exit code {e.returncode}). Skipping...")
+                except Exception as e:
+                    print(f"Unexpected error during MP3 conversion for {file_path}: {e}")
 
             elif ext == ".ogg":
                 out_path = os.path.join(root, name + ".cwav")
                 print(f"Converting {file_path} to CWAV...")
-                subprocess.run(["cwavtool", "-i", file_path, "-o", out_path], check=True)
+                try:
+                    subprocess.run(["cwavtool", "-i", file_path, "-o", out_path], check=True)
+                except subprocess.CalledProcessError as e:
+                    print(f"Error: cwavtool failed on {file_path} (Exit code {e.returncode}). Skipping...")
+                except Exception as e:
+                    print(f"Unexpected error during CWAV conversion for {file_path}: {e}")
 
 if __name__ == "__main__":
     main()
