@@ -134,15 +134,15 @@ jobs:
       - name: Setup Virtual Environment and Install Pillow
         if: inputs.name == 'Nintendo 3DS'
         run: |
-          python3 -m venv venv
-          ./venv/bin/pip install Pillow          
+          sudo apt-get update && sudo apt-get install -y python3-pip
+          pip install Pillow --break-system-packages       
 
       - name: Convert Images, XMLs & Audio Files
         if: inputs.name == 'Nintendo 3DS'
         run: |
           sudo apt-get update && sudo apt-get install -y ffmpeg
           export PATH=/opt/devkitpro/tools/bin:$PATH
-          ./venv/bin/python convert_assets.py
+          python3 convert_assets.py
 
       - name: Compile for 3DS via Haxe3DS (Safe Check)
         if: inputs.name == 'Nintendo 3DS'
