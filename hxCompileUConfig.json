@@ -12,7 +12,7 @@
 	],
 	"programVersion": ">=1.5.3",
 	"projectDefines": [
-		"-D lime_use_old_deltatime"
+		"lime_use_old_deltatime"
 	],
 	"haxeConfig": {
 		"errorReportingStyle": "pretty",
