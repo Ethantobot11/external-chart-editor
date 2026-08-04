@@ -52,6 +52,7 @@ jobs:
             haxelib git hxcpp https://github.com/PsychEngine-report/hxcpp --quiet --always
             haxelib remove flixel
             haxelib git flixel https://github.com/Ethantobot11/flixel-3DS --quiet --always
+            haxelib git citroEngine https://github.com/NAEL2XD/CitroEngine --quiet --always
             haxelib git haxe3ds https://github.com/Ethantobot11/Haxe3DS.git --quiet --always
             haxelib git reflaxe https://github.com/SomeRanDev/reflaxe --quiet
             haxelib git reflaxe.cpp https://github.com/SomeRanDev/reflaxe.cpp --quiet
@@ -88,12 +89,21 @@ jobs:
             fi
           done
 
-      - name: Install Console Toolchains
+      - name: Install Console Toolchains & Audio Dependencies
         run: |
           if [ "${{ inputs.name }}" = "Nintendo 3DS" ]; then
-            # ADDED: citro3d and citro2d installed here for hardware rendering & CitroText
-            dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d general-tools
-            
+            dkp-pacman -S --noconfirm --needed 3ds-dev citro3d citro2d 3ds-portlibs general-tools
+            git clone https://github.com/PabloMK7/libcwav.git --recursive
+            cd libcwav
+            make install
+            cd ..
+            rm -rf libcwav
+            git clone https://github.com/PabloMK7/cwavtool.git
+            cd cwavtool
+            make
+            cp cwavtool /opt/devkitpro/tools/bin/
+            cd ..
+            rm -rf cwavtool
             mkdir -p /opt/devkitpro/tools/bin
             wget -q https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip -O bannertool.zip
             unzip -q bannertool.zip -d bannertool_extracted
@@ -122,11 +132,22 @@ jobs:
           haxe compile.hxml
           cd ../../../../
 
-      - name: Create Missing 3DS Romfs Directory
+      - name: Create Missing 3DS Romfs Directory & Convert Audio
         if: inputs.name == 'Nintendo 3DS'
         run: |
           mkdir -p assets/romfs/haxe3ds
           touch assets/romfs/haxe3ds/version
+          export PATH=/opt/devkitpro/tools/bin:$PATH
+          if [ -d "assets" ]; then
+            find assets/ -type f \( -name "*.ogg" -o -name "*.mp3" \) | while read file; do
+              dir=$(dirname "$file")
+              filename=$(basename "$file")
+              extension="${filename##*.}"
+              nameonly="${filename%.*}"
+              echo "Converting $file to CWAV..."
+              cwavtool "$file" "${dir}/${nameonly}.cwav"
+            done
+          fi
 
       - name: Compile for 3DS via Haxe3DS (Safe Check)
         if: inputs.name == 'Nintendo 3DS'
